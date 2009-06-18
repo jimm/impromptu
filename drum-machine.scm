@@ -1,0 +1,92 @@
+; ensure the audio graph is empty
+(au:clear-graph)
+
+; setup gms instrument
+(define gms (au:make-node "aumu" "dls " "appl"))
+(au:connect-node gms 0 *au:output-node* 0)
+(au:update-graph)
+
+; 2 * pi = one complete wave phase
+(define 2-pi (* 2.0 3.1415927))
+
+; gm drums 
+(begin
+(define *gm-kick* 35)
+(define *gm-kick-2* 36)
+(define *gm-side-stick* 37)
+(define *gm-snare* 38)
+(define *gm-hand-clap* 39)
+(define *gm-snare-2* 40)
+(define *gm-low-floor-tom* 41)
+(define *gm-closed-hi-hat* 42)
+(define *gm-hi-floor-tom* 43)
+(define *gm-pedal-hi-hat* 44)
+(define *gm-low-tom* 45)
+(define *gm-open-hi-hat* 46)
+(define *gm-low-mid-tom* 47)
+(define *gm-hi-mid-tom* 48)
+(define *gm-crash* 49)
+(define *gm-hi-tom* 50)
+(define *gm-ride* 51)
+(define *gm-chinese* 52)
+(define *gm-ride-bell* 53)
+(define *gm-tambourine* 54)
+(define *gm-splash* 55)
+(define *gm-cowbell* 56)
+(define *gm-crash-2* 57)
+(define *gm-vibraslap* 58)
+(define *gm-ride-2* 59)
+(define *gm-hi-bongo* 60)
+(define *gm-low-bongo* 61)
+(define *gm-mute-hi-conga* 62)
+(define *gm-hi-conga* 63)
+(define *gm-low-conga* 64)
+(define *gm-hi-timbale* 65)
+(define *gm-low-timbale* 66)
+(define *gm-hi-agogo* 67)
+(define *gm-low-agogo* 68)
+(define *gm-cabasa* 69)
+(define *gm-maracas* 70)
+(define *gm-short-whistle* 71)
+(define *gm-long-whistle* 72)
+(define *gm-short-guiro* 73)
+(define *gm-long-guiro* 74)
+(define *gm-claves* 75)
+(define *gm-hi-wood-block* 76)
+(define *gm-low-wood-block* 77)
+(define *gm-mute-cuica* 78)
+(define *gm-open-cuica* 79)
+(define *gm-mute-triangle* 80)
+(define *gm-open-triangle* 81)
+)
+
+; step-seq is a list of 16 lists where each list is played on consecutive 16th-notes
+; every pitch in a list is played simultaneously
+;
+; try changing the contents of the lists, and re-evaluating step-seq
+(define step-seq '((*gm-closed-hi-hat* *gm-maracas* *gm-kick*)
+                   (*gm-closed-hi-hat* *gm-maracas*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-snare-2*)
+                   (*gm-closed-hi-hat* *gm-maracas*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-kick*)
+                   (*gm-closed-hi-hat* *gm-maracas*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-hi-conga*)
+                   (*gm-open-hi-hat* *gm-long-guiro* *gm-kick-2*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-kick*)
+                   (*gm-closed-hi-hat* *gm-maracas*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-cabasa*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-cowbell*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-kick*)
+                   (*gm-closed-hi-hat* *gm-maracas*)
+                   (*gm-closed-hi-hat* *gm-maracas* *gm-pedal-hi-hat*)
+                   (*gm-open-hi-hat*)))
+
+(define play-drums
+   (lambda (time step get-volume)
+      (map (lambda (p)
+              (play-note time gms (eval p) (get-volume step) 10000 9))
+           (list-ref step-seq (modulo step 16)))
+      (callback (+ time 10000) play-drums (+ time 11025) (+ step 1) get-volume)))
+ 
+; modulates the volume via a cosine oscillator
+(play-drums (now) 0 (lambda (step) (+ 60 (* 40 (cos (* 2-pi (/ step 4)))))))

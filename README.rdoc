@@ -1,0 +1,16 @@
+= Impromptu
+
+This is my collection of Impromptu (http://impromptu.moso.com.au/) code. Most
+of this is experimental.
+
+I plan to use midi-setup.scm and flow.scm to control my live keyboard setup.
+
+= Auto-Loading Code
+
+Copy anything you want loaded to
+~/Library/Application Support/Impromptu.
+
+= ext
+
+The ext subdirectory contains other people's code, downloaded from the
+Impromptu site.
