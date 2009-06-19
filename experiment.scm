@@ -63,20 +63,31 @@
 
 (define test-pre-list '((t1-pre) (t2-pre)))
 
+
 (define test-filter-list
-   (list (filter t1 "this is the filter") (filter t2 "second in filter chain" "aha")))
+   (list (filter t1 "this is the filter")
+         (filter t2 "second in filter chain" "aha")))
+
+(define other-test-filter-list
+   (list (filter t1 "SECOND FLOW ONLY FILTER")))
 
 (define test-flow
    (append (list test-pre-list) test-filter-list))
+
+(define other-test-flow
+   (append (list '((t1-pre))) other-test-filter-list))
 
 (append '((a b)) test-filter-list)
 
 (print test-filter-list)
 (print test-flow)
+(print other-test-flow)
 (print (car test-flow))
 (print (cdr test-flow))
 
 (play-flow test-flow)
+
+(play-flow-list test-flow other-test-flow)
 
 (debug "================")
 (play-filters test-filter-list (list "dev" "typ" "chan" "a" "b"))

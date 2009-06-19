@@ -104,20 +104,41 @@
 ;;; particular MIDI events.
 ;;; ----------------------------------------------------------------
 
+(define prev-flow-event-p
+   (lambda (dev typ chan a b)
+      (and (= typ *io:midi-cc*)
+           (= chan 0)
+           (= a #x6e)
+           (= b 1))))
+
+(define next-flow-event-p
+   (lambda (dev typ chan a b)
+      (and (= typ *io:midi-cc*)
+           (= chan 0)
+           (= a #x6f)
+           (= b 1))))
+
+; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
+; if appropriate.
 (define play-flow-list-interrupt-func
    (lambda (dev typ chan a b n flow-list)
-      ; TODO how detect when to change?
-      ; (play-nth-flow-list (+ n 1) flow-list)))
-      ()))
-      
+      (when (and (prev-flow-event-p dev typ chan a b)
+                 (> n 0))
+            (play-nth-flow-list (- n 1) flow-list))
+      (when (and (next-flow-event-p dev typ chan a b)
+                 (< (+ n 1) (length flow-list)))
+            (play-nth-flow-list (+ n 1) flow-list))))
+
 (define play-nth-flow-list
    (lambda (n flow-list)
-      (play-flow (list (list-ref flow-list n) play-flow-list-interrupt-func n flow-list))))
+      (play-flow (list-ref flow-list n) play-flow-list-interrupt-func n flow-list)))
 
 ;; Hold on to a list of flows. Play the first one and listen for MIDI
 ;; events that tell us to move to the next/prev flow in the list.
+;;
+;; See prev-flow-event-p and next-flow-event-p. You can redefine them.
 (define play-flow-list
-   (lambda (flow-list)
+   (lambda flow-list
       (play-nth-flow-list 0 flow-list)))
 
 ;;; ================================================================
