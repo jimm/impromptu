@@ -8,7 +8,7 @@
   (define *tx2* (io:midi-destination 5)) ; TX-81Z #2, chan 3
   (define *d4* (io:midi-destination 6))  ; D4
 
-  (define *mb* (io:midi-source 0))	; Midiboard
-  (define *ws-in* (io:midi-source 1))	; Wavestation
+  (define *mb* (io:midi-source 0))	     ; Midiboard
+  (define *ws-in* (io:midi-source 1))	 ; Wavestation
 
 )
