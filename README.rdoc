@@ -7,8 +7,8 @@ I plan to use midi-setup.scm and flow.scm to control my live keyboard setup.
 
 = Auto-Loading Code
 
-Copy anything you want loaded to
-~/Library/Application Support/Impromptu.
+Copy anything you want loaded to ~/Library/Application Support/Impromptu. See
+the comments in bootstrap.scm, which will load init.scm for you.
 
 = ext
 
