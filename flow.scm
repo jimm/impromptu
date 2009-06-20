@@ -50,10 +50,12 @@
                (io:midi-out (now) to typ to-chan a b)))))
 
 ;;; ================================================================
-;;; Playing a flow
+;;; Flow functions
 ;;;
-;;; A flow is a list whose car is a list of pre-filter functions to
-;;; call and whose remaining elements are filters.
+;;; A flow is a list whose optional first element is a string name,
+;;; next element (possibly the first, if there is no string name)
+;;; is a list of pre-filter functions to call, and whose remaining
+;;; elements are filters.
 ;;;
 ;;; Example flow:
 ;;; '(( ; pre function list
@@ -67,6 +69,18 @@
 ;;; MIDI event args. The filter must return either a list of (possibly
 ;;; modified) MIDI event args or the empty list. If a filter returns
 ;;; the empty list then the remaining filters in the flow are ignored.
+;;; ================================================================
+
+(define flow-has-name? (lambda (flow) (string? (car flow))))
+
+(define flow-name (lambda (flow) (if (flow-has-name? flow) (car flow) "")))
+
+(define flow-pre-list (lambda (flow) (if (flow-has-name? flow) (cadr flow) (car flow))))
+
+(define flow-filter-list (lambda (flow) (if (flow-has-name? flow) (cddr flow) (cdr flow))))
+
+;;; ================================================================
+;;; Playing a flow
 ;;; ================================================================
 
 ;; Play a list of fiters. Stop processing as soon as a filter returns
@@ -87,22 +101,22 @@
 (define play-flow
    (lambda args
       (let* ((flow (car args))
-             (pre-list (car flow))
-             (filter-list (cdr flow))
              (interrupt (cdr args)))
         ; Run pre-filter funcs
         (for-each (lambda (pre) (apply (eval (car pre)) (cdr pre)))
-                  pre-list)
+                  (flow-pre-list flow))
         (set! io:midi-in
               (lambda (dev typ chan a b)
                  (when (not (null? interrupt))
                        (apply (eval (car interrupt)) dev typ chan a b (cdr interrupt)))
-                 (play-filters filter-list (list dev typ chan a b)))))))
+                 (play-filters (flow-filter-list flow) (list dev typ chan a b)))))))
 
 ;;; ----------------------------------------------------------------
 ;;; Playing a list of flows, moving between them in response to
 ;;; particular MIDI events.
 ;;; ----------------------------------------------------------------
+
+(load-my-file "flow_list_gui.scm")
 
 (define prev-flow-event-p
    (lambda (dev typ chan a b)
@@ -121,25 +135,28 @@
 ; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
 ; if appropriate.
 (define play-flow-list-interrupt-func
-   (lambda (dev typ chan a b n flow-list)
+   (lambda (dev typ chan a b canvas n flow-list)
       (when (and (prev-flow-event-p dev typ chan a b)
                  (> n 0))
-            (play-nth-flow-list (- n 1) flow-list))
+            (play-nth-flow-list canvas (- n 1) flow-list))
       (when (and (next-flow-event-p dev typ chan a b)
                  (< (+ n 1) (length flow-list)))
-            (play-nth-flow-list (+ n 1) flow-list))))
+            (play-nth-flow-list canvas (+ n 1) flow-list))))
 
 (define play-nth-flow-list
-   (lambda (n flow-list)
-      (play-flow (list-ref flow-list n) play-flow-list-interrupt-func n flow-list)))
+   (lambda (canvas n flow-list)
+      (draw-flow-list canvas n flow-list)
+      (play-flow (list-ref flow-list n) play-flow-list-interrupt-func canvas n flow-list)))
 
 ;; Hold on to a list of flows. Play the first one and listen for MIDI
 ;; events that tell us to move to the next/prev flow in the list.
+;; Calls methods that create and update *flow-list-canvas*. It's OK
+;; if *flow-list-canvas* is null.
 ;;
 ;; See prev-flow-event-p and next-flow-event-p. You can redefine them.
 (define play-flow-list
    (lambda flow-list
-      (play-nth-flow-list 0 flow-list)))
+      (play-nth-flow-list *flow-list-canvas* 0 flow-list)))
 
 ;;; ================================================================
 ;;; Pre-defined pre-filter functions

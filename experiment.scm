@@ -155,3 +155,30 @@
           (io:midi-out (now) *kz* typ 0 a b))))
 
 (stop-midi)
+
+;;; Graphics noodling
+
+(define *flow-list-canvas* ())
+(define *flow-list-text-style* (gfx:make-text-style "Times-Roman" 16.0 (list 0 0 0 1)))
+
+(define draw-flow-list
+  (lambda (n flow-list)
+     (set! *flow-list-canvas* (gfx:make-canvas 400 600))
+     (gfx:clear-canvas (now) *flow-list-canvas* (list 0 0 0 0.5))
+     (gfx:draw-path (now) *flow-list-canvas*
+                    (gfx:make-rectangle 0 0 400 20)
+                    (list 0 0 0 1)
+                    (list 0 1 0 1))
+     (gfx:draw-text (now) *flow-list-canvas* n *flow-list-text-style* (list 8 0 400 20))))
+
+(draw-flow-list 0 ())
+
+
+(gfx:start-live-video)
+
+(define loopy
+   (lambda (time)
+      (gfx:draw-image time *flow-list-canvas* (gfx:get-live-frame) 0.5)
+      (callback (+ time 2000) 'loopy (+ time 3000))))
+(loopy (now))
+(define loopy ())
