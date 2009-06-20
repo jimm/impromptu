@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
 require 'midilib'
 
 def unique_file_name_from(seq_name)
