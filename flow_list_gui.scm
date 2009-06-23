@@ -2,8 +2,11 @@
 
 (define *flow-list-canvas* (gfx:make-canvas 400 600))
 (define *flow-list-text-style* (gfx:make-text-style "Times-Roman" 16.0 (list 0 0 0 1)))
+(define *fl-color-bg* (list 0.25 0.25 0.25 1))
 (define *fl-color-curr* (list 0.8 0.8 0.8 1))
 (define *fl-color* (list 0.5 0.5 0.5 1))
+
+(gfx:clear-canvas (now) *flow-list-canvas* *fl-color-bg*)
 
 (define draw-nth-flow
    (lambda (canvas n curr-n flow-list)
@@ -22,7 +25,7 @@
 (define draw-flow-list
    (lambda (canvas n flow-list)
       (when canvas
-         (gfx:clear-canvas (now) canvas (list 0.25 0.25 0.25 1))
+         (gfx:clear-canvas (now) canvas *fl-color-bg*)
          (dotimes (i (length flow-list))
             (draw-nth-flow canvas i n flow-list)))))
 
