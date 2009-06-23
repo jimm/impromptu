@@ -36,11 +36,14 @@
 ;;;   (filter2 "arg"))
 ;;; ================================================================
 
+;; Returns #t if the flow has a name---that is, if the car is a string.
 (define flow-has-name? (lambda (flow) (string? (car flow))))
 
 ;; Returns the empty string if the flow does not have a name.
 (define flow-name (lambda (flow) (if (flow-has-name? flow) (car flow) "")))
 
+;; Return a flow's list of pre-filter functions.
 (define flow-pre-list (lambda (flow) (if (flow-has-name? flow) (cadr flow) (car flow))))
 
+;; Return a flow's list of filters.
 (define flow-filter-list (lambda (flow) (if (flow-has-name? flow) (cddr flow) (cdr flow))))
