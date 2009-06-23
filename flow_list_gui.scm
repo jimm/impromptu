@@ -29,4 +29,3 @@
 ; (draw-flow-list *flow-list-canvas* 0 '(a b c))
 
 (define close-flow-list-canvas (lambda () (gfx:close-canvas *flow-list-canvas*)))
-
