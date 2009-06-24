@@ -80,6 +80,8 @@
 
 (load-my-file "flow_list_gui.scm")
 
+;; Returns #t if the args define a MIDI event that we recognize for moving to
+;; the previous flow.
 (define prev-flow-event-p
    (lambda (dev typ chan a b)
       (and (= typ *io:midi-cc*)
@@ -87,6 +89,8 @@
            (= a #x6e)
            (= b 1))))
 
+;; Returns #t if the args define a MIDI event that we recognize for moving to
+;; the next flow.
 (define next-flow-event-p
    (lambda (dev typ chan a b)
       (and (= typ *io:midi-cc*)
