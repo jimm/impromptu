@@ -47,7 +47,7 @@
       ()))
 
 ;;; ================================================================
-;;; Example flows
+;;; Test flows
 ;;; ================================================================
 
 (define test-filter-list
@@ -111,6 +111,28 @@
 (io:print-midi-destinations)
 (stop-midi)
 (set! io:midi-out ())
+
+;;; ================================================================
+;;; Example flows
+;;; ================================================================
+
+(play-flow (list "Midiboard to K2000" () (filter out *kz* 0)))
+(play-flow (list "Midiboard to Wavestation" () (filter out *ws* 5)))
+(play-flow (list "Midiboard to PX" () (filter out *px* 4)))
+(play-flow (list "Midiboard to Super Jupiter" () (filter out *sj* 3)))
+(play-flow (list "Midiboard to TX 1" () (filter out *tx1* 1)))
+(play-flow (list "Midiboard to TX 2" () (filter out *tx2* 2)))
+(play-flow (list "Midiboard to D4" () (filter out *d4* 9)))
+
+(play-flow-list
+   (list "Midiboard to K2000" () (filter out *kz* 0))
+   (list "Midiboard to Wavestation" () (filter out *ws* 5))
+   (list "Midiboard to PX" () (filter out *px* 4))
+   (list "Midiboard to Super Jupiter" () (filter out *sj* 3))
+   (list "Midiboard to TX 1" () (filter out *tx1* 1))
+   (list "Midiboard to TX 2" () (filter out *tx2* 2))
+   (list "Midiboard to D4" () (filter out *d4* 9))
+)
 
 ;;; ================================================================
 ;;; test code
