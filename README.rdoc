@@ -13,8 +13,8 @@ the comments in bootstrap.scm, which will load init.scm for you.
 = Flow
 
 I'm working on live MIDI performance control: sending program changes and
-handling split/layer/transpose/etc. See flow_loader.scm, which loads
-flow_data.scm (functions that manipulate flows and filters), flow_list_gui.scm
+handling split/layer/transpose/etc. See flow-loader.scm, which loads
+flow-data.scm (functions that manipulate flows and filters), flow-list-gui.scm
 (functions that draw a simple "where am I in the flow" window), and flow.scm
 (the main flow/filter processor).
 

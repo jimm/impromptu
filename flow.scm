@@ -78,8 +78,6 @@
 ;;; particular MIDI events.
 ;;; ----------------------------------------------------------------
 
-(load-my-file "flow_list_gui.scm")
-
 ;; Returns #t if the args define a MIDI event that we recognize for moving to
 ;; the previous flow.
 (define prev-flow-event-p

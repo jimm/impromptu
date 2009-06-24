@@ -6,8 +6,8 @@
 ;;
 ;; (for-each
 ;;   (lambda (f) (load-my-file (string-append f ".scm")))
-;;   (list "flow_data" "flow_list_gui" "flow"))
+;;   (list "flow-data" "flow-list-gui" "flow"))
 
-(load-my-file "flow_data.scm")
-(load-my-file "flow_list_gui.scm")
+(load-my-file "flow-data.scm")
+(load-my-file "flow-list-gui.scm")
 (load-my-file "flow.scm")
