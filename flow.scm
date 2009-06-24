@@ -84,8 +84,8 @@
    (lambda (dev typ chan a b)
       (and (= typ *io:midi-cc*)
            (= chan 0)
-           (= a #x6e)
-           (= b 1))))
+           (= a 110)
+           (= b 127))))
 
 ;; Returns #t if the args define a MIDI event that we recognize for moving to
 ;; the next flow.
@@ -93,8 +93,8 @@
    (lambda (dev typ chan a b)
       (and (= typ *io:midi-cc*)
            (= chan 0)
-           (= a #x6f)
-           (= b 1))))
+           (= a 111)
+           (= b 127))))
 
 ; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
 ; if appropriate.
