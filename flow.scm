@@ -169,7 +169,7 @@
 ;; Only let through messages from input-device.
 (define only-from
    (lambda (in-dev dev type chan a b)
-      (if (eq in-dev dev)
+      (if (equal? in-dev dev)
           (list dev type chan a b)
           ())))
 
@@ -184,11 +184,12 @@
 ;; All other events are let through.
 (define range
    (lambda (low high dev typ chan a b)
-      (if (is-note-type typ)
-          (if (and (>= low a) (<= high a))
-              (list dev typ chan a b)
-              ())
-          (list dev type chan a b))))
+      (let ((midi-args (list dev typ chan a b)))
+         (if (is-note-type typ)
+             (if (and (>= a low) (<= a high))
+                 midi-args
+                 ())
+             midi-args))))
 
 ;; (out destination channel)
 ;; Output all events to destination on channel.
@@ -197,8 +198,11 @@
       (io:midi-out (now) out-dest type out-chan a b)
       (list in-dev type in-chan a b)))
 
-;; (multi '(filter-list ...)
+;; (multi (list (list filters...)
+;;              (list filters...)))
 ;; Run all filter lists in the list.
 (define multi
-   (lambda (filters dev typ chan a b)
-     (play-filters filters (list dev typ chan a b))))
+    (lambda (filter-list-list dev typ chan a b)
+       (let ((midi-args (list dev typ chan a b)))
+          (for-each (lambda (filter-list) (play-filters filter-list midi-args))
+                    filter-list-list))))

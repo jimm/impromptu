@@ -121,15 +121,24 @@
 (play-flow (list "Midiboard to TX 2" () (filter out *tx2* 2)))
 (play-flow (list "Midiboard to D4" () (filter out *d4* 9)))
 
+(define only-from-mb (filter only-from *mb*))
+
 (play-flow-list
-   (list "Midiboard to K2000" () (filter out *kz* 0))
-   (list "Midiboard to Wavestation" () (filter out *ws* 5))
-   (list "Midiboard to PX" () (filter out *px* 4))
-   (list "Midiboard to Super Jupiter" () (filter out *sj* 3))
-   (list "Midiboard to TX 1" () (filter out *tx1* 1))
-   (list "Midiboard to TX 2" () (filter out *tx2* 2))
-   (list "Midiboard to D4" () (filter out *d4* 9))
+   (list "Midiboard to K2000" () only-from-mb (filter out *kz* 0))
+   (list "Midiboard to Wavestation" () only-from-mb (filter out *ws* 5))
+   (list "Midiboard to PX" () only-from-mb (filter out *px* 4))
+   (list "Midiboard to Super Jupiter" () only-from-mb (filter out *sj* 3))
+   (list "Midiboard to TX 1" () only-from-mb (filter out *tx1* 1))
+   (list "Midiboard to TX 2" () only-from-mb (filter out *tx2* 2))
+   (list "Midiboard to D4" () only-from-mb (filter out *d4* 9))
 )
+
+(play-flow (list "multi test" ()
+                 (filter multi
+                         (list
+                               (list (filter out *sj* 3)
+                                     (filter out *d4* 9))
+                               (list (filter out *ws* 5))))))
 
 ;;; ================================================================
 ;;; test code
