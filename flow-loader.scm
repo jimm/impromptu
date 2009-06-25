@@ -2,7 +2,8 @@
 
 ;; Using load inside map/for-each does not work. That is because Impromptu's
 ;; load returns to the top level so the stack gets reset. So this code
-;; won't work as expected; only the first file gets loaded.
+;; won't work as expected; only the first file gets loaded. Note that tis
+;; limitation will be removed in the next release of Impromptu.
 ;;
 ;; (for-each
 ;;   (lambda (f) (load-my-file (string-append f ".scm")))
