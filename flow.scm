@@ -96,8 +96,8 @@
            (= a 111)
            (= b 127))))
 
-; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
-; if appropriate.
+;; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
+;; if appropriate.
 (define play-flow-list-interrupt-func
    (lambda (dev typ chan a b canvas n flow-list)
       (when (and (prev-flow-event-p dev typ chan a b)
@@ -107,6 +107,7 @@
                  (< (+ n 1) (length flow-list)))
             (play-nth-flow-list canvas (+ n 1) flow-list))))
 
+;; Given an index n and a list of flows, play the nth flow.
 (define play-nth-flow-list
    (lambda (canvas n flow-list)
       (draw-flow-list canvas n flow-list)
