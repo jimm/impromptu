@@ -12,7 +12,7 @@
 (define note-types (list *io:midi-on* *io:midi-off* *io:midi-pp*))
 
 ;; Return non-false if type is one of the note types.
-(define is-note-type (lambda (type) (member type note-types)))
+(define note-type? (lambda (type) (member type note-types)))
 
 ;; Stop all MIDI routing.
 (define stop-midi (lambda () (set! io:midi-in ())))
@@ -177,7 +177,7 @@
 ;; Transpose note events by amount.
 (define xpose
    (lambda (amt dev typ chan a b)
-      (list dev typ chan (if (is-note-type typ) (+ a amt) a) b)))
+      (list dev typ chan (if (note-type? typ) (+ a amt) a) b)))
 
 ;; (range low high)
 ;; Only let through note events between low and high inclusive.
@@ -185,7 +185,7 @@
 (define range
    (lambda (low high dev typ chan a b)
       (let ((midi-args (list dev typ chan a b)))
-         (if (is-note-type typ)
+         (if (note-type? typ)
              (if (and (>= a low) (<= a high))
                  midi-args
                  ())

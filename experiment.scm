@@ -40,7 +40,7 @@
 
 (define test-xpose
    (lambda (amt dev typ chan a b)
-      (list dev typ chan (if (is-note-type typ) (+ a amt) a) b)))
+      (list dev typ chan (if (note-type? typ) (+ a amt) a) b)))
 
 (define let-nothing-through
    (lambda (arg dev typ chan a b)
