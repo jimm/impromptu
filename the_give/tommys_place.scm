@@ -8,7 +8,7 @@
 (define tp-flow-1
    (list "Tommy's Place Flow 1"
          tp-progs
-         (filter only-from *mb*)
+         (mk-f only-from *mb*)
          (mk-f multi
                  (list 
                         (list (mk-f range 0 55)
