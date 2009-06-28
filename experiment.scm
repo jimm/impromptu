@@ -24,26 +24,26 @@
       (print "t2-pre")))
 
 (define t1
-   (lambda (arg dev typ chan a b)
-      (print "t1 args =" arg dev typ chan a b)
-      (list dev typ chan a b)))
+   (lambda (arg dev type chan a b)
+      (print "t1 args =" arg dev type chan a b)
+      (list dev type chan a b)))
 
 (define t2
-   (lambda (arg1 arg2 dev typ chan a b)
-      (print "t2 args =" arg1 arg2 dev typ chan a b)
-      (list dev typ chan a b)))
+   (lambda (arg1 arg2 dev type chan a b)
+      (print "t2 args =" arg1 arg2 dev type chan a b)
+      (list dev type chan a b)))
 
 (define t3
-   (lambda (dev typ chan a b)
-     (print "t3 args =" dev typ chan a b)
-     (list dev typ chan a b)))
+   (lambda (dev type chan a b)
+     (print "t3 args =" dev type chan a b)
+     (list dev type chan a b)))
 
 (define test-xpose
-   (lambda (amt dev typ chan a b)
-      (list dev typ chan (if (note-type? typ) (+ a amt) a) b)))
+   (lambda (amt dev type chan a b)
+      (list dev type chan (if (note-type? type) (+ a amt) a) b)))
 
 (define let-nothing-through
-   (lambda (arg dev typ chan a b)
+   (lambda (arg dev type chan a b)
       ()))
 
 ;;; ================================================================
@@ -90,10 +90,10 @@
 (play-flow-list test-flow other-test-flow)
 
 (debug "================")
-(play-filters test-filter-list (list "dev" "typ" "chan" "a" "b"))
+(play-filters test-filter-list (list "dev" "type" "chan" "a" "b"))
 (multi '((t1 "multi t1")
          (t2 "multi t2 arg 1" "multi t2 arg 2"))
-       "dev" "typ" "chan" "a" "b")
+       "dev" "type" "chan" "a" "b")
 
 (mk-f out *sj* 3)
 (macro-expand (mk-f out *sj* 3))

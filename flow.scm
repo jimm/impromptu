@@ -37,9 +37,9 @@
 ;;   (define io:midi-out (pass-through *mb* *kz* 0))
 (define pass-through
    (lambda (from to to-chan)
-      (lambda (dev typ chan a b)
+      (lambda (dev type chan a b)
          (when (= dev from)
-               (io:midi-out (now) to typ to-chan a b)))))
+               (io:midi-out (now) to type to-chan a b)))))
 
 ;;; ================================================================
 ;;; Playing a flow
@@ -68,10 +68,10 @@
         (for-each (lambda (pre) (apply (eval (car pre)) (cdr pre)))
                   (flow-pre-list flow))
         (set! io:midi-in
-              (lambda (dev typ chan a b)
+              (lambda (dev type chan a b)
                  (when (not (null? interrupt))
-                       (apply (eval (car interrupt)) dev typ chan a b (cdr interrupt)))
-                 (play-filters (flow-filter-list flow) (list dev typ chan a b)))))))
+                       (apply (eval (car interrupt)) dev type chan a b (cdr interrupt)))
+                 (play-filters (flow-filter-list flow) (list dev type chan a b)))))))
 
 ;;; ----------------------------------------------------------------
 ;;; Playing a list of flows, moving between them in response to
@@ -81,8 +81,8 @@
 ;; Returns #t if the args define a MIDI event that we recognize for moving to
 ;; the previous flow.
 (define prev-flow-event-p
-   (lambda (dev typ chan a b)
-      (and (= typ *io:midi-cc*)
+   (lambda (dev type chan a b)
+      (and (= type *io:midi-cc*)
            (= chan 0)
            (= a 110)
            (= b 127))))
@@ -90,8 +90,8 @@
 ;; Returns #t if the args define a MIDI event that we recognize for moving to
 ;; the next flow.
 (define next-flow-event-p
-   (lambda (dev typ chan a b)
-      (and (= typ *io:midi-cc*)
+   (lambda (dev type chan a b)
+      (and (= type *io:midi-cc*)
            (= chan 0)
            (= a 111)
            (= b 127))))
@@ -99,11 +99,11 @@
 ;; Look for prev-flow-event-p or next-flow-event-p and play prev/next flow
 ;; if appropriate.
 (define play-flow-list-interrupt-func
-   (lambda (dev typ chan a b canvas n flow-list)
-      (when (and (prev-flow-event-p dev typ chan a b)
+   (lambda (dev type chan a b canvas n flow-list)
+      (when (and (prev-flow-event-p dev type chan a b)
                  (> n 0))
             (play-nth-flow-list canvas (- n 1) flow-list))
-      (when (and (next-flow-event-p dev typ chan a b)
+      (when (and (next-flow-event-p dev type chan a b)
                  (< (+ n 1) (length flow-list)))
             (play-nth-flow-list canvas (+ n 1) flow-list))))
 
@@ -177,16 +177,16 @@
 ;; (xpose amount)
 ;; Transpose note events by amount.
 (define xpose
-   (lambda (amt dev typ chan a b)
-      (list dev typ chan (if (note-type? typ) (+ a amt) a) b)))
+   (lambda (amt dev type chan a b)
+      (list dev type chan (if (note-type? type) (+ a amt) a) b)))
 
 ;; (range low high)
 ;; Only let through note events between low and high inclusive.
 ;; All other events are let through.
 (define range
-   (lambda (low high dev typ chan a b)
-      (let ((midi-args (list dev typ chan a b)))
-         (if (note-type? typ)
+   (lambda (low high dev type chan a b)
+      (let ((midi-args (list dev type chan a b)))
+         (if (note-type? type)
              (if (and (>= a low) (<= a high))
                  midi-args
                  ())
@@ -203,8 +203,8 @@
 ;;              (list filters...)))
 ;; Run all filter lists in the list.
 (define multi
-    (lambda (filter-list-list dev typ chan a b)
-       (let ((midi-args (list dev typ chan a b)))
+    (lambda (filter-list-list dev type chan a b)
+       (let ((midi-args (list dev type chan a b)))
           (for-each (lambda (filter-list) (play-filters filter-list midi-args))
                     filter-list-list))))
 
@@ -226,10 +226,10 @@
              (equal? (cdr a) val)))))
 
 (define block
-   (lambda (match-data-assoc dev typ chan a b)
-      (if (and (block-match 'type match-data-assoc typ)
+   (lambda (match-data-assoc dev type chan a b)
+      (if (and (block-match 'type match-data-assoc type)
                (block-match 'chan match-data-assoc chan)
                (block-match 'a match-data-assoc a)
                (block-match 'b match-data-assoc b))
           ()
-          (list dev typ chan a b))))
+          (list dev type chan a b))))
