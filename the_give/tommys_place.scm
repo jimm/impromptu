@@ -9,29 +9,29 @@
    (list "Tommy's Place Flow 1"
          tp-progs
          (filter only-from *mb*)
-         (filter multi
+         (mk-f multi
                  (list 
-                        (list (filter range 0 55)
-                              (filter xpose 36)
-                              (filter out *sj* 3)
-                              (filter xpose -12)
-                              (filter out *px* 4))
-                        (list (filter range 48 127)
-                              (filter out *kz* 0))))))
+                        (list (mk-f range 0 55)
+                              (mk-f xpose 36)
+                              (mk-f out *sj* 3)
+                              (mk-f xpose -12)
+                              (mk-f out *px* 4))
+                        (list (mk-f range 48 127)
+                              (mk-f out *kz* 0))))))
 
 (define tp-flow-2
    (list "Tommy's Place Flow 2"
          tp-progs
-         (filter only-from *mb*)
-         (filter multi
+         (mk-f only-from *mb*)
+         (mk-f multi
                  (list 
-                    (list (filter range 0 55)
-                          (filter xpose 36)
-                          (filter out *sj* 3)
-                          (filter out *ws* 5)
-                          (filter xpose -12)
-                          (filter out *px* 4))
-                    (list (filter range 48 127)
-                          (filter out *kz* 0))))))
+                    (list (mk-f range 0 55)
+                          (mk-f xpose 36)
+                          (mk-f out *sj* 3)
+                          (mk-f out *ws* 5)
+                          (mk-f xpose -12)
+                          (mk-f out *px* 4))
+                    (list (mk-f range 48 127)
+                          (mk-f out *kz* 0))))))
 
 (play-flow-list tp-flow-1 tp-flow-2)

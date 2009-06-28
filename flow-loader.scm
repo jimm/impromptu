@@ -6,9 +6,9 @@
 ;; limitation will be removed in the next release of Impromptu.
 ;;
 ;; (for-each
-;;   (lambda (f) (load-my-file (string-append f ".scm")))
+;;   (lambda (f) (load-my-file f))
 ;;   (list "flow-data" "flow-list-gui" "flow"))
 
-(load-my-file "flow-data.scm")
-(load-my-file "flow-list-gui.scm")
-(load-my-file "flow.scm")
+(load-my-file "flow-data")
+(load-my-file "flow-list-gui")
+(load-my-file "flow")

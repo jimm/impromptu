@@ -9,8 +9,8 @@
 ;; This is the curry function. Use it to create a filter. For example,
 ;; to create a filter using the xpose function (defined in flow.scm):
 ;;
-;;   (filter xpose 12)
-(define (filter fun . args)
+;;   (mk-f xpose 12)
+(define (mk-f fun . args)
    (lambda x
       (apply fun (append args x))))
 
@@ -32,8 +32,8 @@
 ;;;     (pre1 "arg")
 ;;;     (pre2 "arg") )
 ;;;   ; start of filter list
-;;;   (filter1 "arg")
-;;;   (filter2 "arg"))
+;;;   (mk-f filter1 "arg")
+;;;   (mk-f filter2 "arg"))
 ;;; ================================================================
 
 ;; Returns #t if the flow has a name---that is, if the car is a string.

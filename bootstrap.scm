@@ -12,5 +12,7 @@
 ;; how to get any environment variables, or I'd use HOME instead of this
 ;; hardcoded value.
 (define *my-dir* "/Users/jimm/src/impromptu/")
-(define load-my-file (lambda (f) (load (string-append *my-dir* f))))
-(load-my-file "init.scm")
+
+(define load-my-file (lambda (f) (load (string-append *my-dir* f ".scm"))))
+
+(load-my-file "init")
