@@ -207,3 +207,29 @@
        (let ((midi-args (list dev typ chan a b)))
           (for-each (lambda (filter-list) (play-filters filter-list midi-args))
                     filter-list-list))))
+
+;; (block match-assoc)
+;; Blocks further processing of MIDI events that match the values in assoc.
+;; The keys that are used are 'type, 'chan, 'a, and 'b.
+;;
+;; Example:
+;;   (block '((type . *io:midi-cc*) (a . 7)))
+;; blocks volume.
+
+; Return non-#f if value in match-data for key is equal to val. It's OK if
+; there is no entry for key.
+(define block-match
+   (lambda (key match-data-assoc val)
+      (let ((a (assoc key match-data-assoc)))
+         (if (not a)
+             #t
+             (equal? (cdr a) val)))))
+
+(define block
+   (lambda (match-data-assoc dev typ chan a b)
+      (if (and (block-match 'type match-data-assoc typ)
+               (block-match 'chan match-data-assoc chan)
+               (block-match 'a match-data-assoc a)
+               (block-match 'b match-data-assoc b))
+          ()
+          (list dev typ chan a b))))
