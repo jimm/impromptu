@@ -9,6 +9,7 @@
 ;;   (lambda (f) (load-my-file f))
 ;;   (list "flow-data" "flow-list-gui" "flow"))
 
+(load-my-file "utils")
 (load-my-file "flow-data")
 (load-my-file "flow-list-gui")
 (load-my-file "flow")

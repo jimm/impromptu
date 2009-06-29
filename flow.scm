@@ -1,32 +1,4 @@
 ;;; ================================================================
-;;; Constants and helper functions
-;;; ================================================================
-
-;; Missing MIDI types (high nibble of status byte, shifted down)
-(define *io:midi-pp* #xa)               ; poly pressure
-(define *io:midi-cp* #xc)               ; chan pressure
-(define *io:midi-pb* #xd)               ; pitch bend
-
-;; List of Impromptu MIDI types for note events (on, off, poly press)
-;; Must use (list), or else list will contain symbols
-(define note-types (list *io:midi-on* *io:midi-off* *io:midi-pp*))
-
-;; Return non-false if type is one of the note types.
-(define note-type? (lambda (type) (member type note-types)))
-
-;; Stop all MIDI routing.
-(define stop-midi (lambda () (set! io:midi-in ())))
-
-;;; ================================================================
-;;; Debug
-;;; ================================================================
-(define debug ())
-
-(set! debug  (lambda args (print (append '("debug:") args))))
-
-(set! debug (lambda args ()))
-
-;;; ================================================================
 ;;; Simple pass-throughs
 ;;; ================================================================
 
@@ -185,9 +157,11 @@
 ;; All other events are let through.
 (define range
    (lambda (low high dev type chan a b)
-      (let ((midi-args (list dev type chan a b)))
+      (let ((midi-args (list dev type chan a b))
+            (low-val (if (string? low) (string->note low) low))
+            (high-val (if (string? high) (string->note high) high)))
          (if (note-type? type)
-             (if (and (>= a low) (<= a high))
+             (if (and (>= a low-val) (<= a high-val))
                  midi-args
                  ())
              midi-args))))

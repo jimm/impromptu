@@ -1,0 +1,55 @@
+;;; ================================================================
+;;; Constants and helper functions
+;;; ================================================================
+
+;; Missing MIDI types (high nibble of status byte, shifted down)
+(define *io:midi-pp* #xa)               ; poly pressure
+(define *io:midi-cp* #xc)               ; chan pressure
+(define *io:midi-pb* #xd)               ; pitch bend
+
+;; List of Impromptu MIDI types for note events (on, off, poly press)
+;; Must use (list), or else list will contain symbols
+(define note-types (list *io:midi-on* *io:midi-off* *io:midi-pp*))
+
+;; Return non-false if type is one of the note types.
+(define note-type? (lambda (type) (member type note-types)))
+
+;; Stop all MIDI routing.
+(define stop-midi (lambda () (set! io:midi-in ())))
+
+;; Helper for string->note.
+(define string->note:offset
+   (lambda (str)
+      (print (char-downcase (string-ref str 0)))
+      (let ((offset (case (char-downcase (string-ref str 0))
+                          ((#\c) 0)
+                          ((#\d) 2)
+                          ((#\e) 4)
+                          ((#\f) 5)
+                          ((#\g) 7)
+                          ((#\a) 9)
+                          ((#\b) 11)))
+            (sharp-flat (case (char-downcase (string-ref str 1))
+                              ((#\#) 1)  ; #
+                              ((#\b) -1) ; b
+                              (else 0))))
+         (+ offset sharp-flat))))
+
+;; Given a note name return the MIDI note number.
+(define string->note
+   (lambda (str)
+      (let* ((offset (string->note:offset str))
+             (octave (case offset
+                           ((1 3 6 8 10) (string->number (substring str 2)))
+                           (else (string->number (substring str 1))))))
+     (+ (* (+ 1 octave) 12) offset))))
+
+;;; ================================================================
+;;; Debug
+;;; ================================================================
+(define debug ())
+
+(set! debug  (lambda args (print (append '("debug:") args))))
+
+(set! debug (lambda args ()))
+
