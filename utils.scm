@@ -17,22 +17,28 @@
 ;; Stop all MIDI routing.
 (define stop-midi (lambda () (set! io:midi-in ())))
 
+;; Return val clamped inside the range low-high inclusive.
+(define clamp
+   (lambda (val low high)
+      (if (< val low) low
+          (if (> val high) high
+              val))))
+
 ;; Helper for string->note.
 (define string->note:offset
    (lambda (str)
-      (print (char-downcase (string-ref str 0)))
-      (let ((offset (case (char-downcase (string-ref str 0))
-                          ((#\c) 0)
-                          ((#\d) 2)
-                          ((#\e) 4)
-                          ((#\f) 5)
-                          ((#\g) 7)
-                          ((#\a) 9)
-                          ((#\b) 11)))
-            (sharp-flat (case (char-downcase (string-ref str 1))
-                              ((#\#) 1)  ; #
-                              ((#\b) -1) ; b
-                              (else 0))))
+      (let* ((offset (case (char-downcase (string-ref str 0))
+                           ((#\c) 0)
+                           ((#\d) 2)
+                           ((#\e) 4)
+                           ((#\f) 5)
+                           ((#\g) 7)
+                           ((#\a) 9)
+                           ((#\b) 11)))
+             (sharp-flat (case (char-downcase (string-ref str 1))
+                               ((#\#) 1)  ; #
+                               ((#\b) -1) ; b
+                               (else 0))))
          (+ offset sharp-flat))))
 
 ;; Given a note name return the MIDI note number.
@@ -41,8 +47,9 @@
       (let* ((offset (string->note:offset str))
              (octave (case offset
                            ((1 3 6 8 10) (string->number (substring str 2)))
-                           (else (string->number (substring str 1))))))
-     (+ (* (+ 1 octave) 12) offset))))
+                           (else (string->number (substring str 1)))))
+             (val (+ (* (+ 1 octave) 12) offset)))
+         (clamp val 0 127))))
 
 ;;; ================================================================
 ;;; Debug
