@@ -2,7 +2,7 @@
 
 ;; Using load inside map/for-each does not work. That is because Impromptu's
 ;; load returns to the top level so the stack gets reset. So this code
-;; won't work as expected; only the first file gets loaded. Note that tis
+;; won't work as expected; only the first file gets loaded. Note that this
 ;; limitation will be removed in the next release of Impromptu.
 ;;
 ;; (for-each
