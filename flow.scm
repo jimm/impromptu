@@ -99,12 +99,22 @@
 ;;; Pre-defined pre-filter functions
 ;;; ================================================================
 
-;; (pc dev chan val)
+;; (pc dest chan val)
 ;; Program change.
 (define pc
    (lambda (dest chan val)
       (io:midi-out (now) dest *io:midi-pc* chan val)
       ()))
+
+;; (vol dest chan val)
+;; Output a volume CC command to destionation on channel.
+(define vol
+   (lambda (dest chan val)
+      (io:midi-out (now) dest *io:midi-cc* chan 7 val)))
+
+;; (vol dest chan)
+;; Output a volume CC command to destionation on channel with val 127.
+(define full-vol (lambda (dest chan) (vol dest chan 127)))
 
 ;; (kz-pc chan program)
 ;; Kurzweil program change. Sends bank (100's value) then program (0-99).
