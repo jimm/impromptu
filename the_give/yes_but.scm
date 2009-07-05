@@ -1,6 +1,9 @@
 (define yb-flow-1
   (list "Yes, But Flow 1"
-        ()
+        (list
+              (list 'pc *sj* 3 7)
+              (list 'kz-pc 0 2)
+              (list 'pc *ws* 5 18))
         (mk-f only-from *mb*)
         (mk-f multi
               (list
