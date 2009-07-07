@@ -7,7 +7,7 @@
 (define io:midi-in (pass-through *mb* *tx2* 2))
 (define io:midi-in (pass-through *mb* *sj* 3))
 (define io:midi-in (pass-through *mb* *ws* 5))
-(define io:midi-in (pass-through *mb* *px* 7))
+(define io:midi-in (pass-through *mb* *px* 4))
 (define io:midi-in (pass-through *mb* *d4* 9))
 
 (stop-midi)
