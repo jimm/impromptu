@@ -1,13 +1,13 @@
-(define tp-progs
-   (list
-      (list 'pc *sj* 3 5)
-      (list 'pc *ws* 5 81)
-      (list 'pc *px* 4 23)
-      (list 'kz-pc 0 109)))
+(define tp-pre-proc
+   (lambda ()
+      (pc *sj* 3 5)
+      (pc *ws* 5 81)
+      (pc *px* 4 23)
+      (kz-pc 0 109)))
 
 (define tp-flow-1
    (list "Tommy's Place Flow 1"
-         tp-progs
+         tp-pre-proc
          (mk-f only-from *mb*)
          (mk-f multi
                  (list 
@@ -21,7 +21,7 @@
 
 (define tp-flow-2
    (list "Tommy's Place Flow 2"
-         tp-progs
+         tp-pre-proc
          (mk-f only-from *mb*)
          (mk-f multi
                  (list 

@@ -61,7 +61,7 @@
          (mk-f let-nothing-through)
          (mk-f t1 "my-arg-1-again")))
 
-(define test-pre-list '((t1-pre) (t2-pre)))
+(define test-pre-proc (lambda () (t1-pre) (t2-pre)))
 
 
 (define test-filter-list
@@ -72,10 +72,10 @@
    (list (mk-f t1 "SECOND FLOW ONLY FILTER")))
 
 (define test-flow
-   (append (list test-pre-list) test-filter-list))
+   (append test-pre-proc test-filter-list))
 
 (define other-test-flow
-   (append (list '((t1-pre))) other-test-filter-list))
+   (append (lambda () (t1-pre)) other-test-filter-list))
 
 (append '((a b)) test-filter-list)
 
@@ -100,10 +100,10 @@
 
 (play-flow
   (list
-    ; pre list
-    (('kz-pc 0 2))
+    ; pre proc
+    (lambda () (kz-pc 0 2))
     ; remaining elements are filters
-    ('out *sj* 3)))
+    (mk-f out *sj* 3)))
 
 (io:print-midi-destinations)
 (stop-midi)
