@@ -25,3 +25,13 @@
   (lambda (name node-list)
     (let ((n (assoc name node-list)))
       (au:make-node (cadr n) (caddr n) (cadddr n)))))
+
+;(define x (my-make-node "FreeAlpha" *aumu-node-list*))
+;(au:open-view x)
+;(au:clear-graph)
+;(au:connect-node x 0 *au:output-node* 0)
+;(au:update-graph)
+;(begin
+;  (play-note (now) x 80 127 *second*)
+;  (play-note (now) x 84 127 *second*)
+;)
