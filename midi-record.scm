@@ -1,8 +1,12 @@
 ;;; This is the beginning of a simple sequencer. Maybe.
-;;; Requires metronome.scm.
+;;;
+;;; Requires metronome.scm, which in turn requires midi-setup.scm and
+;;; midi-consts.scm for the {start,stop}-clicks functions..
 
-;; each element contains (time type a b)
-;; caller must add device and output channel to this
+;; Each element contains (delta-time type a b). During recording, times
+;; are absolute. After recording, they are changed to delta-times.
+;; Note that the caller must add device and output channel to this on
+;; playback.
 (define *recording* ())
 (define *old-io-midi-in* ())
 (define *tempo* 120)                    ; metronome tempo
@@ -44,14 +48,12 @@
     (set! io:midi-in
           (lambda (dev typ chan a b)
             (midi-record from to to-chan dev typ chan a b)))
-    (start-metronome
-     *tempo*
-     (lambda () (io:midi-out (now) *d4* *io:midi-on* 9 64 127)))))
+    (start-clicks *tempo*)))
 
 
 ;; Stop recording and clean up *recording*.
 (define midi-stop-recording
   (lambda ()
     (set! io:midi-in *old-io-midi-in*)
-    (stop-metronome)
+    (stop-clicks)
     (clean-up-recording)))
