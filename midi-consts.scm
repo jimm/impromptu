@@ -478,6 +478,9 @@
 (define *gm-pc-applause* 126)
 (define *gm-pc-gunshot* 127)
 
+;; Default GM drum channel.
+(define *gm-drum-channel* 9)
+
 ;; GM drum notes start at 35 (C), so subtrack GM-DRUM-NOTE-LOWEST from your
 ;; note number before using this array.
 (define *gm-drum-note-lowest* 35)
