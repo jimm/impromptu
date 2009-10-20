@@ -6,7 +6,7 @@
 ;; be used as a value for io:midi-in.
 ;;
 ;; Example:
-;;   (define io:midi-out (pass-through *mb* *kz* 0))
+;;   (define io:midi-in (pass-through *mb* *kz* 0))
 (define pass-through
    (lambda (from to to-chan)
       (lambda (dev type chan a b)
@@ -102,8 +102,7 @@
 ;; Program change.
 (define pc
    (lambda (dest chan val)
-      (io:midi-out (now) dest *io:midi-pc* chan val)
-      ()))
+      (io:midi-out (now) dest *io:midi-pc* chan val)))
 
 ;; (vol dest chan val)
 ;; Output a volume CC command to destionation on channel.
