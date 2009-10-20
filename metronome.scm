@@ -19,3 +19,14 @@
 (define stop-metronome
   (lambda ()
     (set! metronome-on #f)))
+
+;; Uses the metronome to play clicks using my D4. Assumes both
+;; midi-setup.scm and midi-consts.scm have been loaded.
+(define start-clicks
+  (lambda (tempo)
+    (start-metronome
+     tempo
+     (lambda () (io:midi-out (now) *d4* *gm-drum-channel*
+                             *gm-closed-hi-hat* 127)))))
+
+(define stop-clicks stop-metronome)
