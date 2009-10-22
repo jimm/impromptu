@@ -1,32 +1,45 @@
-;; Examples:
-;;   (start-metronome 120 (lambda () (print "tick...")))
-;;   (stop-metronome)
+;; Examples, from simplest (most default values) to most complex (no default
+;; values except for note velocity):
+;;
+;;   (start-clicks 120)
+;;
+;;   (start-midi-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120)
+;;
+;;   (start-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120
+;;     (lambda (dev chan note)
+;;       (io:midi-out (now) dev *io:midi-on* chan note 127)))))
 
 (define metronome-on #f)
 
+;; Calls a function regularly, passing in dev, chan, note.
 (define metronome
-  (lambda (time tempo func)
+  (lambda (time dev chan note tempo func)
     (when metronome-on
-          (func)                        ; do something at time
-          (let ((t (+ time (/ (* 60 *second*) tempo))))
-            (callback t metronome t tempo func)))))
+      (func dev chan note)              ; do something at time
+      (let ((t (+ time (/ (* 60 *second*) tempo))))
+        (callback t metronome t dev chan note tempo func)))))
 
 (define start-metronome
-  (lambda (tempo func)
+  (lambda (dev chan note tempo func)
     (set! metronome-on #t)
-    (metronome (now) tempo func)))
+    (metronome (now) dev chan note tempo func)))
 
 (define stop-metronome
   (lambda ()
     (set! metronome-on #f)))
 
+(define start-midi-metronome
+  (lambda (dev chan note tempo)
+    (start-metronome
+     dev chan note tempo 
+     (lambda (dev chan note) (io:midi-out (now) dev *io:midi-on* chan note 127)))))
+
+(define stop-midi-metronome stop-metronome)
+
 ;; Uses the metronome to play clicks using my D4. Assumes both
 ;; midi-setup.scm and midi-consts.scm have been loaded.
 (define start-clicks
   (lambda (tempo)
-    (start-metronome
-     tempo
-     (lambda () (io:midi-out (now) *d4* *gm-drum-channel*
-                             *gm-closed-hi-hat* 127)))))
+    (start-midi-metronome *d4* *gm-drum-channel* *gm-closed-hi-hat* tempo)))
 
 (define stop-clicks stop-metronome)
