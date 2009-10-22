@@ -10,7 +10,7 @@
 (define *recording* ())
 (define *old-io-midi-in* ())
 (define *tempo* 120)                    ; metronome tempo
-(define *metronome* (0, 10, 64))        ; device, channel, note
+(define *metronome* (list *d4* *gm-drum-channel* *gm-closed-hi-hat*)) ; device, channel, note
 
 (define add-to-recording
   (lambda (t dev typ to-chan a b)
@@ -48,12 +48,13 @@
     (set! io:midi-in
           (lambda (dev typ chan a b)
             (midi-record from to to-chan dev typ chan a b)))
-    (start-clicks *tempo*)))
+    (start-metronome (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
+                     (lambda (dev chan note) (io:midi-out (now) dev *io:midi-on* chan note 127)))))
 
 
 ;; Stop recording and clean up *recording*.
 (define midi-stop-recording
   (lambda ()
     (set! io:midi-in *old-io-midi-in*)
-    (stop-clicks)
+    (stop-metronome)
     (clean-up-recording)))
