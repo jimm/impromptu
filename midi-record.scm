@@ -5,13 +5,17 @@
 
 ;; TODO
 ;;
-;; - when recording stops, stop playback of other tracks
+;; - need new stop-playing-tracks method
+;;
+;; - when recording stops, call stop-playing-tracks
 ;;
 ;; - remember beginning offset when recording a track; apply it to first
 ;;   element.
 ;;
 ;; - is-recording flag so stop-recording will do nothing (not screw up
 ;;   *recording* if not recording
+;;
+;; - track mute and track solo
 
 ;; Stores input and output information during recording. A list of the form
 ;; (from-device to-device to-channel). Merged with *recording* data by
@@ -68,13 +72,18 @@
 
 ;; ================ playing ================
 
-;; Play a track using the device and channel built in to the track.
+;; Play a track using the device and channel built in to the track. See also
+;; play-track-on.
 (define play-track
   (lambda (track)
     (let ((dev (car track))
           (chan (cadr track))
           (events (caddr track)))
       (play-track-on track dev chan))))
+
+;; Play all tracks in track-list, using the device and channel built in to
+;; each track..
+(define play-tracks (lambda (track-list) (map play-track track-list)))
 
 ;; Play a track ignoring the device and channel built-in, instead using the
 ;; device and channel given.
