@@ -5,6 +5,8 @@
 
 ;; TODO
 ;;
+;; - when recording stops, stop playback of other tracks
+;;
 ;; - remember beginning offset when recording a track; apply it to first
 ;;   element.
 ;;

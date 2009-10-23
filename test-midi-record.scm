@@ -47,7 +47,6 @@
 
 ;; test playback of all tracks
 (map play-track tracks)
-(map print '(a))
 
 (print "reversed recording =" (reverse *recording*))
 (print "to delta =" (calc-delta-times (reverse *recording*)))
