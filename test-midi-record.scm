@@ -13,7 +13,7 @@
 ;; Make sure MidiPipe has a keyboard going to its own MidiPipe Output output 1,
 ;; and SimpleSynth is listing to its own SimpleSynth virtual input.
 (define src (io:midi-source 1))       ; MidiPipe Output 1
-(define dest (io:midi-destination 2)) ; SimpleSynth virtual input
+(define dest (io:midi-destination 1)) ; SimpleSynth virtual input
 
 ;; metronome test
 ;; *tempo* default value is 120, defined in midi-record.
@@ -34,14 +34,20 @@
 (define track (midi-stop-recording))
 (print track)
 
+(define tracks ())
+
 ;; test recording from a specific device
 (define *metronome* (list dest *gm-drum-channel* *gm-closed-hi-hat*))
-(midi-start-recording src dest 0)
-(define track (midi-stop-recording))
-(print "track =" track)
+(midi-start-recording src dest 0 tracks)
+(set! tracks (cons (midi-stop-recording) tracks)) ; Save track into tracks list
+(print "tracks =" tracks)
 
 ;; test playback of just-recorded track
 (play-track track)
+
+;; test playback of all tracks
+(map play-track tracks)
+(map print '(a))
 
 (print "reversed recording =" (reverse *recording*))
 (print "to delta =" (calc-delta-times (reverse *recording*)))

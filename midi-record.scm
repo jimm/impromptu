@@ -5,10 +5,11 @@
 
 ;; TODO
 ;;
+;; - remember beginning offset when recording a track; apply it to first
+;;   element.
+;;
 ;; - is-recording flag so stop-recording will do nothing (not screw up
 ;;   *recording* if not recording
-;;
-;; - track playback
 
 ;; Stores input and output information during recording. A list of the form
 ;; (from-device to-device to-channel). Merged with *recording* data by
@@ -63,59 +64,7 @@
     (if (null? list) ()
         (do-calc-delta-times () 0 (car list) (cdr list)))))
 
-;; Method used for MIDI input. Echoes input and calls add-to-recording.
-(define midi-record
-  (lambda (dev type chan a b)
-    (let ((from (recording-src))
-          (to (recording-dest))
-          (to-chan (recording-chan)))
-      (when (or (null? from) (equal? dev from))
-        (io:midi-out (now) to type to-chan a b)
-        (add-to-recording (now) to type to-chan a b)))))
-
-;; Called by midi-start-recording to make sure that the *metronome* output
-;; device value is defined.
-(define ensure-metronome-defined
-  (lambda ()
-    (when (or (null? *metronome*) (zero? (cadr *metronome*)))
-      (print "Must define *metronome*. For example,")
-      (print "  (define *metronome* (list device *gm-drum-channel* *gm-closed-hi-hat*))")
-      (error "undefined *metronome* device"))))
-
-;; Start recording into *recording*.
-(define midi-start-recording
-  (lambda (from to to-chan)
-    (ensure-metronome-defined)
-    (set! *recording-info* (list from to to-chan))
-    (set! *recording* ())
-    (set! *old-io-midi-in* io:midi-in)
-    (set! io:midi-in
-          (lambda (dev type chan a b)
-            (midi-record dev type chan a b)))
-    (start-metronome
-     (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
-     (lambda (dev chan note)
-       (io:midi-out (now) dev *io:midi-on* chan note 127)))))
-
-;; Clean up *recording* (reverse it and turn absolute times into delta times)
-;; and merge with *recording-info* to return a track of the form (out-device
-;; channel (events...)).
-(define make-track-from-recording
-  (lambda ()
-    (list (recording-dest) (recording-chan)
-          (calc-delta-times (reverse *recording*)))))
-
-;; Stop recording, cleans up *recording*, and returns a track which is a list
-;; of the form (out-device channel (events...)). Each event is a list of the
-;; form (delta-time type a b).
-;;
-;; Note that the caller must add device and output channel to the track info
-;; on playback.
-(define midi-stop-recording
-  (lambda ()
-    (set! io:midi-in *old-io-midi-in*)
-    (stop-metronome)
-    (make-track-from-recording)))
+;; ================ playing ================
 
 ;; Play a track using the device and channel built in to the track.
 (define play-track
@@ -148,3 +97,61 @@
 (define play-track-event-list
   (lambda (dev chan events)
     (do-play-track-event-list dev chan (car events) (cdr events))))
+
+;; ================ recording ================
+
+;; Method used for MIDI input. Echoes input and calls add-to-recording.
+(define midi-record
+  (lambda (dev type chan a b)
+    (let ((from (recording-src))
+          (to (recording-dest))
+          (to-chan (recording-chan)))
+      (when (or (null? from) (equal? dev from))
+        (io:midi-out (now) to type to-chan a b)
+        (add-to-recording (now) to type to-chan a b)))))
+
+;; Called by midi-start-recording to make sure that the *metronome* output
+;; device value is defined.
+(define ensure-metronome-defined
+  (lambda ()
+    (when (or (null? *metronome*) (zero? (cadr *metronome*)))
+      (print "Must define *metronome*. For example,")
+      (print "  (define *metronome* (list device *gm-drum-channel* *gm-closed-hi-hat*))")
+      (error "undefined *metronome* device"))))
+
+;; Start recording into *recording*.
+(define midi-start-recording
+  (lambda (from to to-chan . tracks-to-play)
+    (ensure-metronome-defined)
+    (set! *recording-info* (list from to to-chan))
+    (set! *recording* ())
+    (set! *old-io-midi-in* io:midi-in)
+    (set! io:midi-in
+          (lambda (dev type chan a b)
+            (midi-record dev type chan a b)))
+    (start-metronome
+     (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
+     (lambda (dev chan note)
+       (io:midi-out (now) dev *io:midi-on* chan note 127)))
+    (when (not (null? tracks-to-play))
+      (map play-track (car tracks-to-play)))))
+
+;; Clean up *recording* (reverse it and turn absolute times into delta times)
+;; and merge with *recording-info* to return a track of the form (out-device
+;; channel (events...)).
+(define make-track-from-recording
+  (lambda ()
+    (list (recording-dest) (recording-chan)
+          (calc-delta-times (reverse *recording*)))))
+
+;; Stop recording, cleans up *recording*, and returns a track which is a list
+;; of the form (out-device channel (events...)). Each event is a list of the
+;; form (delta-time type a b).
+;;
+;; Note that the caller must add device and output channel to the track info
+;; on playback.
+(define midi-stop-recording
+  (lambda ()
+    (set! io:midi-in *old-io-midi-in*)
+    (stop-metronome)
+    (make-track-from-recording)))
