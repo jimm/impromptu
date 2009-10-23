@@ -11,6 +11,9 @@
 ;;     (lambda (dev chan note)
 ;;       (io:midi-out (now) dev *io:midi-on* chan note 127)))))
 
+;; TODO
+;; - add num beats per measure, make metronome louder at beginning of measures
+
 (define metronome-on #f)
 
 ;; Calls a function regularly, passing in dev, chan, note.
