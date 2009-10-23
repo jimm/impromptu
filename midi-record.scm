@@ -52,7 +52,7 @@
 (define do-calc-delta-times
   (lambda (list prev-time event rest)
     (let ((new-list (cons (event-with-delta-time event prev-time) list)))
-      (if (null? rest) new-list
+      (if (null? rest) (reverse new-list)
           (do-calc-delta-times new-list (car event) (car rest) (cdr rest))))))
 
 ; Given a list like *recording* return a list with absolute times converted to

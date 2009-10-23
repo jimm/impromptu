@@ -12,8 +12,8 @@
 
 ;; Make sure MidiPipe has a keyboard going to its own MidiPipe Output output 1,
 ;; and SimpleSynth is listing to its own SimpleSynth virtual input.
-(define src (io:midi-source 0))       ; MidiPipe Output 1
-(define dest (io:midi-destination 0)) ; SimpleSynth virtual input
+(define src (io:midi-source 1))       ; MidiPipe Output 1
+(define dest (io:midi-destination 2)) ; SimpleSynth virtual input
 
 ;; metronome test
 ;; *tempo* default value is 120, defined in midi-record.
@@ -45,3 +45,7 @@
 
 (print "reversed recording =" (reverse *recording*))
 (print "to delta =" (calc-delta-times (reverse *recording*)))
+
+; Test calc-delta-times
+(define test-list '((42 0 1 2) (44 2 3 4) (45 1 2 3) (52 7 8 9)))
+(print (calc-delta-times test-list))
