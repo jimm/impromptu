@@ -7,10 +7,20 @@
 ;; are absolute. After recording, they are changed to delta-times.
 ;; Note that the caller must add device and output channel to this on
 ;; playback.
+
+; Stores MIDI data during recording. After recording, each element of the list
+; contains (delta-time dev typ chan a b).
 (define *recording* ())
+
+; Stores old io:midi-in value during recording. This value is restored when
+; recording stops.
 (define *old-io-midi-in* ())
-(define *tempo* 120)                    ; metronome tempo
-(define *metronome* (list *d4* *gm-drum-channel* *gm-closed-hi-hat*)) ; device, channel, note
+
+; metronome tempo, bpm
+(define *tempo* 120)
+
+; device, channel, note
+(define *metronome* (list *d4* *gm-drum-channel* *gm-closed-hi-hat*))
 
 (define add-to-recording
   (lambda (t dev typ to-chan a b)
@@ -35,10 +45,12 @@
     (cons (if (= prev-time 0) 0 (- (car event) prev-time))
           (cdr event))))
 
+;; Method used for midi input.
 (define midi-record
   (lambda (from to to-chan events dev typ chan a b)
     (when (or (null? from) (= dev from))
-      (add-to-recording (now) dev typ to-chan a b))))
+      (io:midi-out (now) to typ to-chan a b)
+      (add-to-recording (now) to typ to-chan a b))))
 
 ;; Start recording into *recording*.
 (define midi-start-recording
@@ -48,9 +60,10 @@
     (set! io:midi-in
           (lambda (dev typ chan a b)
             (midi-record from to to-chan dev typ chan a b)))
-    (start-metronome (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
-                     (lambda (dev chan note) (io:midi-out (now) dev *io:midi-on* chan note 127)))))
-
+    (start-metronome
+     (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
+     (lambda (dev chan note)
+       (io:midi-out (now) dev *io:midi-on* chan note 127)))))
 
 ;; Stop recording and clean up *recording*.
 (define midi-stop-recording
