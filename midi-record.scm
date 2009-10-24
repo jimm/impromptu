@@ -6,7 +6,9 @@
 ;; TODO
 ;;
 ;; - is-recording flag so stop-recording will do nothing (not screw up
-;;   *recording* if not recording
+;;   *recording* if not recording (or use *recording-info*)
+;;
+;; - quantize
 ;;
 ;; - track mute and track solo
 
