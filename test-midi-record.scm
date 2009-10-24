@@ -12,12 +12,13 @@
 
 ;; Make sure MidiPipe has a keyboard going to its own MidiPipe Output output 1,
 ;; and SimpleSynth is listing to its own SimpleSynth virtual input.
-(define src (io:midi-source 1))       ; MidiPipe Output 1
-(define dest (io:midi-destination 1)) ; SimpleSynth virtual input
+(define src (io:midi-source 0))       ; MidiPipe Output 1
+(define dest (io:midi-destination 0)) ; SimpleSynth virtual input
+(define drums (io:midi-destination 0)) ; SimpleSynth virtual input
 
 ;; metronome test
 ;; *tempo* default value is 120, defined in midi-record.
-(start-midi-metronome-std dest 120)
+(start-midi-metronome-std drums 120)
 (stop-midi-metronome)
 
 ;; passthrough
@@ -29,17 +30,19 @@
 (midi-start-recording src dest 0)
 
 ;; test recording from anywhere
-(define *metronome* (list dest *gm-drum-channel* *gm-closed-hi-hat*))
+(define *metronome* (list drums *gm-drum-channel* *gm-closed-hi-hat*))
 (midi-start-recording () dest 0)
 (define track (midi-stop-recording))
 (print track)
 
 (define tracks ())
+(define track ())
 
 ;; test recording from a specific device
-(define *metronome* (list dest *gm-drum-channel* *gm-closed-hi-hat*))
+(define *metronome* (list drums *gm-drum-channel* *gm-closed-hi-hat*))
 (midi-start-recording src dest 0 tracks)
-(set! tracks (cons (midi-stop-recording) tracks)) ; Save track into tracks list
+(set! track (midi-stop-recording))
+(set! tracks (cons track tracks))       ; Save track into tracks
 (print "tracks =" tracks)
 
 ;; test playback of just-recorded track
