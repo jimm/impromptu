@@ -50,6 +50,13 @@
 
 ;; test playback of all tracks
 (play-tracks tracks)
+(begin
+  (start-midi-metronome-std drums 120)
+  (play-track (car tracks))
+)
+(stop-midi-metronome)
+(stop-playing)
+(set! tracks (cdr tracks))
 
 (print "reversed recording =" (reverse *recording*))
 (print "to delta =" (calc-delta-times (reverse *recording*)))
