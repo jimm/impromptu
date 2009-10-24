@@ -5,13 +5,6 @@
 
 ;; TODO
 ;;
-;; - need new stop-playing-tracks method
-;;
-;; - when recording stops, call stop-playing-tracks
-;;
-;; - remember beginning offset when recording a track; apply it to first
-;;   element.
-;;
 ;; - is-recording flag so stop-recording will do nothing (not screw up
 ;;   *recording* if not recording
 ;;
@@ -173,5 +166,6 @@
 (define midi-stop-recording
   (lambda ()
     (set! io:midi-in *old-io-midi-in*)
+    (stop-playing)
     (stop-metronome)
     (make-track-from-recording)))
