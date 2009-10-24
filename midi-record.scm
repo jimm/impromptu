@@ -18,14 +18,15 @@
 ;; - track mute and track solo
 
 ;; Stores input and output information during recording. A list of the form
-;; (from-device to-device to-channel). Merged with *recording* data by
-;; midi-stop-recording.
+;; (from-device to-device to-channel start-time). Merged with *recording* data
+;; by midi-stop-recording.
 (define *recording-info* ())
 
 ;; Accessor methods
 (define recording-src (lambda () (car *recording-info*)))
 (define recording-dest (lambda () (cadr *recording-info*)))
 (define recording-chan (lambda () (caddr *recording-info*)))
+(define recording-start-time (lambda () (cadddr *recording-info*)))
 
 ;; Stores MIDI data during recording. Each element contains (delta-time type a
 ;; b). During recording, times are absolute and the order of the events is
@@ -64,11 +65,10 @@
 
 ; Given a list like *recording* return a list with absolute times converted to
 ; delta times.
-; FIXME
 (define calc-delta-times
-  (lambda (list)
+  (lambda (abs-start-time list)
     (if (null? list) ()
-        (do-calc-delta-times () 0 (car list) (cdr list)))))
+        (do-calc-delta-times () abs-start-time (car list) (cdr list)))))
 
 ;; ================ playing ================
 
@@ -107,7 +107,8 @@
 ;; specifeed device and channel.
 (define play-track-event-list
   (lambda (dev chan events)
-    (do-play-track-event-list dev chan (car events) (cdr events))))
+    (callback (+ (now) (caar events))   ; wait for first event start
+      do-play-track-event-list dev chan (car events) (cdr events))))
 
 ;; ================ recording ================
 
@@ -134,12 +135,12 @@
 (define midi-start-recording
   (lambda (from to to-chan . tracks-to-play)
     (ensure-metronome-defined)
-    (set! *recording-info* (list from to to-chan))
     (set! *recording* ())
     (set! *old-io-midi-in* io:midi-in)
     (set! io:midi-in
           (lambda (dev type chan a b)
             (midi-record dev type chan a b)))
+    (set! *recording-info* (list from to to-chan (now)))
     (start-metronome
      (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
      (lambda (dev chan note)
@@ -153,7 +154,7 @@
 (define make-track-from-recording
   (lambda ()
     (list (recording-dest) (recording-chan)
-          (calc-delta-times (reverse *recording*)))))
+          (calc-delta-times (recording-start-time) (reverse *recording*)))))
 
 ;; Stop recording, cleans up *recording*, and returns a track which is a list
 ;; of the form (out-device channel (events...)). Each event is a list of the
