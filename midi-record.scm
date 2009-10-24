@@ -35,6 +35,9 @@
 ;; midi-stop-recording). *recording* is not changed by that operation.
 (define *recording* ())
 
+;; True when playing. Set to #f to stop playing.
+(define *playing* #f)
+
 ; Stores old io:midi-in value during recording. This value is restored when
 ; recording stops.
 (define *old-io-midi-in* ())
@@ -85,23 +88,28 @@
 ;; each track..
 (define play-tracks (lambda (track-list) (map play-track track-list)))
 
+(define stop-playing (lambda () (set! *playing* #f)))
+
 ;; Play a track ignoring the device and channel built-in, instead using the
 ;; device and channel given.
 (define play-track-on
   (lambda (track dev chan)
+    (set! *playing* #t)
     (play-track-event-list dev chan (caddr track))))
 
 ;; Helper for play-track-event-list
 (define do-play-track-event-list
   (lambda (dev chan event rest)
-    (let ((delta-time (car event))
-          (type (cadr event))
-          (a (caddr event))
-          (b (cadddr event)))
-      (io:midi-out (now) dev type chan a b)
-      (when (not (null? rest))
-        (callback (+ (now) (caar rest))
-                  do-play-track-event-list dev chan (car rest) (cdr rest))))))
+    (if *playing*
+      (let ((delta-time (car event))
+            (type (cadr event))
+            (a (caddr event))
+            (b (cadddr event)))
+        (io:midi-out (now) dev type chan a b)
+        (when (not (null? rest))
+            (callback (+ (now) (caar rest))
+                      do-play-track-event-list dev chan (car rest) (cdr rest))))
+      (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0))))
 
 ;; Play a track event list ((delta type a b) (delta type a b)...) using the
 ;; specifeed device and channel.
