@@ -12,8 +12,8 @@
 
 ;; Make sure MidiPipe has a keyboard going to its own MidiPipe Output output 1,
 ;; and SimpleSynth is listing to its own SimpleSynth virtual input.
-(define src (io:midi-source 0))       ; MidiPipe Output 1
-(define dest (io:midi-destination 0)) ; SimpleSynth virtual input
+(define src (io:midi-source 1))       ; MidiPipe Output 1
+(define dest (io:midi-destination 1)) ; SimpleSynth virtual input
 (define drums (io:midi-destination 0)) ; SimpleSynth virtual input
 
 ;; metronome test
@@ -43,6 +43,7 @@
 (midi-start-recording src dest 0 tracks)
 (set! track (midi-stop-recording))
 (set! tracks (cons track tracks))       ; Save track into tracks
+(print "track =" track)
 (print "tracks =" tracks)
 
 ;; test playback of just-recorded track
@@ -56,7 +57,7 @@
 )
 (stop-midi-metronome)
 (stop-playing)
-(set! tracks (cdr tracks))
+(set! tracks (cdr tracks)) ; remove latest track
 
 (print "reversed recording =" (reverse *recording*))
 (print "to delta =" (calc-delta-times (reverse *recording*)))
