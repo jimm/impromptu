@@ -8,7 +8,11 @@
 ;; - is-recording flag so stop-recording will do nothing (not screw up
 ;;   *recording* if not recording (or use *recording-info*)
 ;;
+;; - sequence list (tempo (track list))
+;;
 ;; - quantize
+;;
+;; - names?
 ;;
 ;; - track mute and track solo
 
