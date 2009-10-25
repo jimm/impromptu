@@ -72,7 +72,64 @@
     (if (null? list) ()
         (do-calc-delta-times () abs-start-time (car list) (cdr list)))))
 
-;; ================ playing ================
+;; ================ tracks ================
+
+;; A track is a list of the form (name dest chan events).
+
+(define make-track
+  (lambda (name dest chan)
+    (list
+     (cons "name" name)
+     (cons "dest" dest)
+     (cons "chan" chan)
+     (cons "events" ()))))
+
+;; Clean up *recording* (reverse it and turn absolute times into delta times)
+;; and merge with *recording-info* to return a track of the form (out-device
+;; channel (events...)).
+(define make-track-from-recording
+  (lambda (name)
+    (list
+     (cons "name" name)
+     (cons "dest" (recording-dest))
+     (cons "chan" (recording-chan))
+     (cons "events" (calc-delta-times (recording-start-time) (reverse *recording*))))))
+
+(define track-get (lambda (track assoc-name) (car (assoc assoc-name track))))
+(define track-set!
+  (lambda (track assoc-name value) (set-obj-for-key! assoc-name value track))))
+
+(define track-name (lambda (track) (track-get track "name")))
+(define track-set-name! (lambda (track name) (track-set! track "name" name)))
+
+(define track-dest (lambda (track) (track-get track "dest")))
+(define track-set-dest! (lambda (track dest) (track-set! track "dest" dest)))
+
+(define track-chan (lambda (track) (track-get track "chan")))
+(define track-set-chan! (lambda (track chan) (track-set! track "chan" chan)))
+
+(define track-events (lambda (track) (track-get track "events")))
+(define track-set-events! (lambda (track events) (track-set! track "events" events)))
+
+;; ================ sequences ================
+
+;; A sequence is a list of the form (tempo tracks). We return a sequence
+;; with the current *tempo* value and an empty track list.
+(define make-seq (lambda () (list *tempo* ())))
+
+(define seq-tempo (lambda (seq) (car seq)))
+
+(define seq-set-tempo! (lambda (seq tempo) (set-car! seq tempo)))
+
+(define seq-tracks (lambda (seq) (cadr seq)))
+
+(define seq-add-track!
+  (lambda (seq track)
+    (set-cdr! seq (cons track (cdr seq)))))
+
+(define seq-play (lambda (seq) (play-tracks (seq-tracks seq))))
+
+;; ================ playing tracks ================
 
 ;; Play a track using the device and channel built in to the track. See also
 ;; play-track-on.
@@ -157,14 +214,6 @@
           (when (not (null? tracks-to-play))
                 (map play-track (car tracks-to-play))))
         (print "midi-start-recording: already recording; ignoring request"))))
-
-;; Clean up *recording* (reverse it and turn absolute times into delta times)
-;; and merge with *recording-info* to return a track of the form (out-device
-;; channel (events...)).
-(define make-track-from-recording
-  (lambda ()
-    (list (recording-dest) (recording-chan)
-          (calc-delta-times (recording-start-time) (reverse *recording*)))))
 
 ;; Stop recording, cleans up *recording*, and returns a track which is a list
 ;; of the form (out-device channel (events...)). Each event is a list of the
