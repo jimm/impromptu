@@ -5,10 +5,10 @@
 
 ;; TODO
 ;;
-;; - is-recording flag so stop-recording will do nothing (not screw up
-;;   *recording* if not recording (or use *recording-info*)
-;;
 ;; - sequence list (tempo (track list))
+;;
+;; - use seq tempo to play tracks, which means changing delta times from
+;;   milliseconds to fractions of a beat (960 ticks per beat)
 ;;
 ;; - quantize
 ;;
@@ -141,19 +141,22 @@
 ;; Start recording into *recording*.
 (define midi-start-recording
   (lambda (from to to-chan . tracks-to-play)
-    (ensure-metronome-defined)
-    (set! *recording* ())
-    (set! *old-io-midi-in* io:midi-in)
-    (set! io:midi-in
-          (lambda (dev type chan a b)
-            (midi-record dev type chan a b)))
-    (set! *recording-info* (list from to to-chan (now)))
-    (start-metronome
-     (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
-     (lambda (dev chan note)
-       (io:midi-out (now) dev *io:midi-on* chan note 127)))
-    (when (not (null? tracks-to-play))
-      (map play-track (car tracks-to-play)))))
+    (if (null? *recording-info*)
+        (begin
+          (ensure-metronome-defined)
+          (set! *old-io-midi-in* io:midi-in)
+          (set! io:midi-in
+                (lambda (dev type chan a b)
+                  (midi-record dev type chan a b)))
+          (set! *recording* ())
+          (set! *recording-info* (list from to to-chan (now)))
+          (start-metronome
+           (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
+           (lambda (dev chan note)
+             (io:midi-out (now) dev *io:midi-on* chan note 127)))
+          (when (not (null? tracks-to-play))
+                (map play-track (car tracks-to-play))))
+        (print "midi-start-recording: already recording; ignoring request"))))
 
 ;; Clean up *recording* (reverse it and turn absolute times into delta times)
 ;; and merge with *recording-info* to return a track of the form (out-device
@@ -174,4 +177,6 @@
     (set! io:midi-in *old-io-midi-in*)
     (stop-playing)
     (stop-metronome)
-    (make-track-from-recording)))
+    (let ((track (make-track-from-recording)))
+      (set! *recording-info* ())
+      track)))
