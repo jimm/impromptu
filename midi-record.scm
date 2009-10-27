@@ -141,8 +141,11 @@
       (play-track-on track dev chan))))
 
 ;; Play all tracks in track-list, using the device and channel built in to
-;; each track..
-(define play-tracks (lambda (track-list) (map play-track track-list)))
+;; each track.
+(define play-tracks
+  (lambda (track-list)
+    (map play-track track-list)
+    (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0)))
 
 (define stop-playing (lambda () (set! *playing* #f)))
 
@@ -164,8 +167,7 @@
         (io:midi-out (now) dev type chan a b)
         (when (not (null? rest))
             (callback (+ (now) (caar rest))
-                      do-play-track-event-list dev chan (car rest) (cdr rest))))
-      (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0))))
+                      do-play-track-event-list dev chan (car rest) (cdr rest)))))))
 
 ;; Play a track event list ((delta type a b) (delta type a b)...) using the
 ;; specifeed device and channel.
