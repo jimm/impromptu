@@ -21,6 +21,18 @@
 (start-midi-metronome-std drums 120)
 (stop-midi-metronome)
 
+;; built-in metronome experimentation
+(print (*metro* 'get-beat))
+(*metro* 'set-tempo 86)      ; does setting metronome tempo reset beat number?
+(print (*metro* 'get-beat))  ; nope, it doesn't
+(*metro* 'set-tempo 120)
+(print (*metro* 'dur 1))     ; duration of 1 beat in samples
+(*metro* 'set-tempo 86)
+(print (*metro* 'dur 1))     ; duration of 1 beat in samples
+(*metro* (now))
+(print (*metro* 'get-beat 1))  ; nope, it doesn't
+(print (*metro* 'get-beat))
+
 ;; passthrough
 (set! io:midi-in (lambda (dev type chan a b) (io:midi-out (now) dest type chan a b)))
 
