@@ -14,7 +14,7 @@
 ;; and SimpleSynth is listing to its own SimpleSynth virtual input.
 (define src (io:midi-source 1))       ; MidiPipe Output 1
 (define dest (io:midi-destination 1)) ; SimpleSynth virtual input
-(define drums (io:midi-destination 0)) ; SimpleSynth virtual input
+(define drums dest)                   ; SimpleSynth virtual input
 
 ;; metronome test
 ;; *tempo* default value is 120, defined in midi-record.
