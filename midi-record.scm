@@ -209,8 +209,8 @@
           (set! *recording-info* (list from to to-chan (now)))
           (start-metronome
            (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
-           (lambda (dev chan note)
-             (io:midi-out (now) dev *io:midi-on* chan note 127)))
+           (lambda (time dev chan note)
+             (io:midi-out time dev *io:midi-on* chan note 127)))
           (when (not (null? tracks-to-play))
                 (map play-track (car tracks-to-play))))
         (print "midi-start-recording: already recording; ignoring request"))))
