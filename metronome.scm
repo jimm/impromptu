@@ -24,8 +24,8 @@
   (lambda (time dev chan note tempo func)
     (when metronome-on
       (func time dev chan note)         ; do something at time
-      (let ((t (+ time (/ (* 60 *second*) tempo))))
-        (callback (- t 500) metronome t dev chan note tempo func)))))
+      (let ((dur (/ (* 60 *second*) tempo)))
+        (callback (+ time (* 0.5 dur)) metronome (+ time dur) dev chan note tempo func)))))
 
 ;; Arguments: MIDI device, channel, note, tempo, and callback function.
 (define start-metronome
