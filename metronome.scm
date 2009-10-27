@@ -8,10 +8,13 @@
 ;;   (start-midi-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120)
 ;;
 ;;   (start-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120
-;;     (lambda (dev chan note)
-;;       (io:midi-out (now) dev *io:midi-on* chan note 127)))))
+;;     (lambda (time dev chan note)
+;;       (io:midi-out time dev *io:midi-on* chan note 127)))))
 
 ;; TODO
+;;
+;; - Use make-metro
+;;
 ;; - add num beats per measure, make metronome louder at beginning of measures
 
 (define metronome-on #f)
@@ -20,9 +23,9 @@
 (define metronome
   (lambda (time dev chan note tempo func)
     (when metronome-on
-      (func dev chan note)              ; do something at time
+      (func time dev chan note)         ; do something at time
       (let ((t (+ time (/ (* 60 *second*) tempo))))
-        (callback t metronome t dev chan note tempo func)))))
+        (callback (- t 500) metronome t dev chan note tempo func)))))
 
 ;; Arguments: MIDI device, channel, note, tempo, and callback function.
 (define start-metronome
@@ -39,7 +42,7 @@
   (lambda (dev chan note tempo)
     (start-metronome
      dev chan note tempo 
-     (lambda (dev chan note) (io:midi-out (now) dev *io:midi-on* chan note 127)))))
+     (lambda (time dev chan note) (io:midi-out time dev *io:midi-on* chan note 127)))))
 
 (define stop-midi-metronome stop-metronome)
 
