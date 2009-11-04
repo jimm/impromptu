@@ -1,5 +1,7 @@
 ;;; This is from an email by Andrew Sorensen to the Impromptu mailing list on
 ;;; 2009-10-25. It is example code, not a ready-to-use library.
+;;;
+;;; Requires Impromptu 2.0.
 
 
 ;; dls to play midi with
