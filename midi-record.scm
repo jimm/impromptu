@@ -72,7 +72,7 @@
 
 ;; ================ assoc list utils ================
 
-(define aget (lambda (alist name) (car (assoc name alist))))
+(define aget (lambda (alist name) (cdr (assoc name alist))))
 (define aset! (lambda (alist name value) (set-obj-for-key! name value alist)))
 
 ;; ================ tracks ================
@@ -134,9 +134,8 @@
 ;; play-track-on.
 (define play-track
   (lambda (track)
-    (let ((dev (car track))
-          (chan (cadr track))
-          (events (caddr track)))
+    (let ((dev (track-dest track))
+          (chan (track-chan track)))
       (play-track-on track dev chan))))
 
 ;; Play all tracks in track-list, using the device and channel built in to
@@ -153,7 +152,7 @@
 (define play-track-on
   (lambda (track dev chan)
     (set! *playing* #t)
-    (play-track-event-list dev chan (caddr track))))
+    (play-track-event-list dev chan (track-events track))))
 
 ;; Helper for play-track-event-list
 (define do-play-track-event-list
@@ -227,6 +226,6 @@
     (set! io:midi-in *old-io-midi-in*)
     (stop-playing)
     (stop-metronome)
-    (let ((track (make-track-from-recording)))
+    (let ((track (make-track-from-recording "New Track")))
       (set! *recording-info* ())
       track)))
