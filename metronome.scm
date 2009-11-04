@@ -16,7 +16,9 @@
 
 ;; TODO
 ;;
-;; - add num beats per measure, make metronome louder at beginning of measures
+;; - Add num beats per measure, make metronome louder at beginning of
+;;   measures. Or perhaps instead I should add a function that does that,
+;;   which can be passed in to start-metronome by the caller.
 
 (define metronome-on #f)
 
