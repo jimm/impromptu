@@ -97,7 +97,7 @@
 
 (define track-get (lambda (track assoc-name) (car (assoc assoc-name track))))
 (define track-set!
-  (lambda (track assoc-name value) (set-obj-for-key! assoc-name value track))))
+  (lambda (track assoc-name value) (set-obj-for-key! assoc-name value track)))
 
 (define track-name (lambda (track) (track-get track "name")))
 (define track-set-name! (lambda (track name) (track-set! track "name" name)))
