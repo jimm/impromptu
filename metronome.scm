@@ -26,10 +26,10 @@
 (define metronome
   (lambda (beat dev chan note func)
     (when metronome-on
-      (let ((time (*metro* 'get-time beat)))
-        (func beat dev chan note)           ; do something at time
-        (let ((dur (*metro* 'dur 1)))
-          (callback (+ time (* dur 0.5)) metronome (+ 1 beat) dev chan note func))))))
+      (func beat dev chan note)         ; do something on the beat
+      (let ((time (*metro* 'get-time beat))
+            (dur (*metro* 'dur 1)))
+        (callback (+ time (* dur 0.5)) metronome (+ 1 beat) dev chan note func))))))
 
 ;; Arguments: MIDI device, channel, note, and callback function.
 (define start-metronome
