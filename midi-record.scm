@@ -41,10 +41,8 @@
 ; recording stops.
 (define *old-io-midi-in* ())
 
-; metronome tempo, bpm
-(define *tempo* 120)
-
-; device, channel, note
+; device, channel, note. Tempo is set using
+; (*metro* 'set-tempo 120)
 (define *metronome* (list 0 *gm-drum-channel* *gm-closed-hi-hat*))
 
 ; Adds (absolute-time type a b) to the front of *recording*.
@@ -72,6 +70,11 @@
     (if (null? list) ()
         (do-calc-delta-times () abs-start-time (car list) (cdr list)))))
 
+;; ================ assoc list utils ================
+
+(define aget (lambda (alist name) (car (assoc name alist))))
+(define aset! (lambda (alist name value) (set-obj-for-key! name value alist)))
+
 ;; ================ tracks ================
 
 ;; A track is a list of the form (name dest chan events).
@@ -95,21 +98,17 @@
      (cons "chan" (recording-chan))
      (cons "events" (calc-delta-times (recording-start-time) (reverse *recording*))))))
 
-(define track-get (lambda (track assoc-name) (car (assoc assoc-name track))))
-(define track-set!
-  (lambda (track assoc-name value) (set-obj-for-key! assoc-name value track)))
+(define track-name (lambda (track) (aget track "name")))
+(define track-set-name! (lambda (track name) (aset! track "name" name)))
 
-(define track-name (lambda (track) (track-get track "name")))
-(define track-set-name! (lambda (track name) (track-set! track "name" name)))
+(define track-dest (lambda (track) (aget track "dest")))
+(define track-set-dest! (lambda (track dest) (aset! track "dest" dest)))
 
-(define track-dest (lambda (track) (track-get track "dest")))
-(define track-set-dest! (lambda (track dest) (track-set! track "dest" dest)))
+(define track-chan (lambda (track) (aget track "chan")))
+(define track-set-chan! (lambda (track chan) (aset! track "chan" chan)))
 
-(define track-chan (lambda (track) (track-get track "chan")))
-(define track-set-chan! (lambda (track chan) (track-set! track "chan" chan)))
-
-(define track-events (lambda (track) (track-get track "events")))
-(define track-set-events! (lambda (track events) (track-set! track "events" events)))
+(define track-events (lambda (track) (aget track "events")))
+(define track-set-events! (lambda (track events) (aset! track "events" events)))
 
 ;; ================ sequences ================
 
@@ -210,9 +209,9 @@
           (set! *recording* ())
           (set! *recording-info* (list from to to-chan (now)))
           (start-metronome
-           (car *metronome*) (cadr *metronome*) (caddr *metronome*) *tempo*
-           (lambda (time dev chan note)
-             (io:midi-out time dev *io:midi-on* chan note 127)))
+           (car *metronome*) (cadr *metronome*) (caddr *metronome*)
+           (lambda (beat dev chan note)
+             (io:midi-out (*metro* 'get-time beat) dev *io:midi-on* chan note 127)))
           (when (not (null? tracks-to-play))
                 (map play-track (car tracks-to-play))))
         (print "midi-start-recording: already recording; ignoring request"))))
