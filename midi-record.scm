@@ -133,26 +133,26 @@
 ;; Play a track using the device and channel built in to the track. See also
 ;; play-track-on.
 (define play-track
-  (lambda (track)
+  (lambda (beat track)
     (let ((dev (track-dest track))
           (chan (track-chan track)))
-      (play-track-on track dev chan))))
+      (play-track-on track beat dev chan))))
 
 ;; Play all tracks in track-list, using the device and channel built in to
 ;; each track.
 (define play-tracks
   (lambda (track-list)
-    (map play-track track-list)
-    (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0)))
+    (let ((start-beat (*metro* 'get-beat 1)))
+      (map (lambda (t) (play-track start-beat t)) track-list))))
 
 (define stop-playing (lambda () (set! *playing* #f)))
 
 ;; Play a track ignoring the device and channel built-in, instead using the
 ;; device and channel given.
 (define play-track-on
-  (lambda (track dev chan)
+  (lambda (track beat dev chan)
     (set! *playing* #t)
-    (play-track-event-list dev chan (track-events track))))
+    (play-track-event-list beat dev chan (track-events track))))
 
 ;; Helper for play-track-event-list
 (define do-play-track-event-list
@@ -163,15 +163,18 @@
             (a (caddr event))
             (b (cadddr event)))
         (io:midi-out (now) dev type chan a b)
-        (when (not (null? rest))
+        (if (not (null? rest))
             (callback (+ (now) (caar rest))
-                      do-play-track-event-list dev chan (car rest) (cdr rest)))))))
+                      do-play-track-event-list dev chan (car rest) (cdr rest))
+            (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0)))
+      (io:midi-out (now) dev *io:midi-cc* chan *cm-all-notes-off* 0))))
+
 
 ;; Play a track event list ((delta type a b) (delta type a b)...) using the
 ;; specifeed device and channel.
 (define play-track-event-list
-  (lambda (dev chan events)
-    (callback (+ (now) (caar events))   ; wait for first event start
+  (lambda (beat dev chan events)
+    (callback (+ (*metro* 'get-time beat) (caar events))   ; wait for first event start
       do-play-track-event-list dev chan (car events) (cdr events))))
 
 ;; ================ recording ================

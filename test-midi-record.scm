@@ -47,6 +47,7 @@
 (define track (midi-stop-recording))
 (print track)
 
+
 (define tracks ())
 (define track ())
 
@@ -58,13 +59,15 @@
 (print "track =" track)
 (print "tracks =" tracks)
 
-;; test playback of just-recorded track
+;; test playback of just-recorded track. Note that calling
+;; stop-playing will not send all-notes-off.
 (play-track track)
 
-;; test playback of all tracks
+;; test playback of all tracks. Plays metronome.
 (play-tracks tracks)
+
 (begin
-  (start-midi-metronome-std drums 120)
+  (start-midi-metronome-std drums)
   (play-track (car tracks))
 )
 (stop-midi-metronome)
@@ -77,3 +80,12 @@
 ; Test calc-delta-times
 (define test-list '((42 0 1 2) (44 2 3 4) (45 1 2 3) (52 7 8 9)))
 (print (calc-delta-times test-list))
+
+
+(print "dev" (track-dest track) "chan" (track-chan track))
+
+(print *recording-info*)
+(calc-delta-times (recording-start-time) (reverse *recording*))
+(make-track-from-recording "New Track")
+(recording-dest)
+(print (list (cons "name" "New Track") (cons "dest" (recording-dest))))
