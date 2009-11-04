@@ -1,19 +1,20 @@
+;; Uses *metro*. To set tempo, (*metro* 'set-tempo 120).
+;;
 ;; Examples, from simplest (most default values) to most complex (no default
 ;; values except for note velocity):
 ;;
-;;   (start-clicks 120)
+;;   (start-clicks)
 ;;
-;;   (start-midi-metronome-std *dv* 120)
+;;   (start-midi-metronome-std *dv*)
 ;;
-;;   (start-midi-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120)
+;;   (start-midi-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat*)
 ;;
-;;   (start-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat* 120
-;;     (lambda (time dev chan note)
-;;       (io:midi-out time dev *io:midi-on* chan note 127)))))
+;;   ; note that beat is passed to func, not time
+;;   (start-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat*
+;;     (lambda (beat dev chan note)
+;;       (io:midi-out (*metro* 'get-time beat) dev *io:midi-on* chan note 127)))))
 
 ;; TODO
-;;
-;; - Use make-metro
 ;;
 ;; - add num beats per measure, make metronome louder at beginning of measures
 
@@ -21,41 +22,41 @@
 
 ;; Calls a function regularly, passing in dev, chan, note.
 (define metronome
-  (lambda (time dev chan note tempo func)
+  (lambda (beat dev chan note func)
     (when metronome-on
-      (func time dev chan note)         ; do something at time
-      (let ((dur (/ (* 60 *second*) tempo)))
-        (callback (+ time (* 0.5 dur)) metronome (+ time dur) dev chan note tempo func)))))
+      (let ((time (*metro* 'get-time beat)))
+        (func beat dev chan note)           ; do something at time
+        (let ((dur (*metro* 'dur 1)))
+          (callback (+ time (* dur 0.5)) metronome (+ 1 beat) dev chan note func))))))
 
-;; Arguments: MIDI device, channel, note, tempo, and callback function.
+;; Arguments: MIDI device, channel, note, and callback function.
 (define start-metronome
-  (lambda (dev chan note tempo func)
+  (lambda (dev chan note func)
     (set! metronome-on #t)
-    (metronome (now) dev chan note tempo func)))
+    (metronome (*metro* 'get-beat 1) dev chan note func)))
 
 (define stop-metronome
   (lambda ()
     (set! metronome-on #f)))
 
-;; Arguments: MIDI device, channel, note, and tempo.
+;; Arguments: MIDI device, channel, and note.
 (define start-midi-metronome
-  (lambda (dev chan note tempo)
+  (lambda (dev chan note)
     (start-metronome
-     dev chan note tempo 
-     (lambda (time dev chan note) (io:midi-out time dev *io:midi-on* chan note 127)))))
+     dev chan note
+     (lambda (beat dev chan note) (io:midi-out (*metro* 'get-time beat) dev *io:midi-on* chan note 127)))))
 
 (define stop-midi-metronome stop-metronome)
 
-;; Two argument: MIDI device and tempo. Assumes both midi-setup.scm and
-;; midi-consts.scm have been loaded.
+;; Two argument: MIDI device. Assumes midi-consts.scm has been loaded.
 (define start-midi-metronome-std
-  (lambda (dev tempo)
-    (start-midi-metronome dev *gm-drum-channel* *gm-closed-hi-hat* tempo)))
+  (lambda (dev)
+    (start-midi-metronome dev *gm-drum-channel* *gm-closed-hi-hat*)))
 
 (define stop-midi-metronome-std stop-metronome)
 
-;; One argument; tempo. Uses the metronome to play clicks using my D4. Assumes
-;; both midi-setup.scm and midi-consts.scm have been loaded.
-(define start-clicks (lambda (tempo) (start-midi-metronome-std *d4* tempo)))
+;; Uses the metronome to play clicks using my D4. Assumes both midi-setup.scm
+;; and midi-consts.scm have been loaded.
+(define start-clicks (lambda () (start-midi-metronome-std *d4*)))
 
 (define stop-clicks stop-metronome)
