@@ -29,7 +29,7 @@
       (func beat dev chan note)         ; do something on the beat
       (let ((time (*metro* 'get-time beat))
             (dur (*metro* 'dur 1)))
-        (callback (+ time (* dur 0.5)) metronome (+ 1 beat) dev chan note func))))))
+        (callback (+ time (* dur 0.5)) metronome (+ 1 beat) dev chan note func)))))
 
 ;; Arguments: MIDI device, channel, note, and callback function.
 (define start-metronome
