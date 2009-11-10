@@ -39,11 +39,7 @@ whose car is "chunk" and whose cdr is a list of
 (define-macro (piano t p v d)
   `(play-note t gms p v d 0))
 
-; (define 
-
 (define (play-song chunk-list)
   (map (lambda (chunk) (play-chunk chunk)) chunk-list))
-
-; (define (play-chunk chunk)
 
 (play-song '(intro verse verse chorus verse chorus solo ending))
