@@ -23,8 +23,7 @@
 
 (define objc:number-at-index
    (lambda (array index)
-      (objc:nsnumber->number (objc:call array "objectAtIndex:"
-index))))
+      (objc:nsnumber->number (objc:call array "objectAtIndex:" index))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -63,8 +62,7 @@ index))))
           (let* ((nextnote (objc:object-at-index track index))
                  (dur (- (objc:number-at-index nextnote 0)
                          (objc:number-at-index note 0))))
-             (callback (*metro* (+ beat (* .5 dur))) 'play-track (+
-beat dur)
+             (callback (*metro* (+ beat (* .5 dur))) 'play-track (+ beat dur)
                        track
                        nextnote
                        (+ index 1)
@@ -74,13 +72,11 @@ beat dur)
 ;; try changing this halfway through playback
 (*metro* 'set-tempo 110)
 
-;; play all tracks first setting each tracks program change (if
-available)
+;; play all tracks first setting each tracks program change (if available)
 (let ((shared-start-beat (*metro* 'get-beat 1)))
    (dotimes (i (objc:call tracks "count"))
       ;; set program change
-      (au:midi-out (now) dls *io:midi-pc* 0 (objc:number-at-index
-pchanges i) 0)
+      (au:midi-out (now) dls *io:midi-pc* 0 (objc:number-at-index pchanges i) 0)
       (let* ((track (objc:object-at-index tracks i))
              (first-note (objc:object-at-index track 0)))
          (play-track (+ shared-start-beat
@@ -102,8 +98,7 @@ pchanges i) 0)
 (define add-note
    (lambda (track beat pitch volume duration)
       (objc:call track "addObject:"
-                 (objc:list->nsarray (list beat pitch volume
-duration)))))
+                 (objc:list->nsarray (list beat pitch volume duration)))))
 
 
 ;; an amazingly uninteresting midi file generator
@@ -123,8 +118,7 @@ duration)))))
             (add-note track1 beat pitch 60 (* .9 dur1))
             (if (> dur2 0)
                 (add-note track1 (+ beat dur1)
-                          (pc:relative pitch (random '(-1 1)) '(0 2 3
-5 7 8 10))
+                          (pc:relative pitch (random '(-1 1)) '(0 2 3 5 7 8 10))
                           80 (* .9 dur2)))))
       (if (< beat 50) (generator (+ beat 2)))))
 
