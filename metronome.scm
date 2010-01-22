@@ -50,7 +50,7 @@
 
 (define stop-midi-metronome stop-metronome)
 
-;; Two argument: MIDI device. Assumes midi-consts.scm has been loaded.
+;; One argument: MIDI device. Assumes midi-consts.scm has been loaded.
 (define start-midi-metronome-std
   (lambda (dev)
     (start-midi-metronome dev *gm-drum-channel* *gm-closed-hi-hat*)))
