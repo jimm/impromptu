@@ -31,7 +31,7 @@
 (define make-intro
   (lambda (rh lh l)
     (if (null? rh) (reverse l)
-       (intro (cdr rh) (cdr lh) (cons (car rh) (cons (car lh) l))))))
+       (make-intro (cdr rh) (cdr lh) (cons (car rh) (cons (car lh) l))))))
 
 (define intro (make-intro intro-rh intro-lh ()))
 
