@@ -5,12 +5,12 @@
 ;;
 ;;   (start-clicks)
 ;;
-;;   (start-midi-metronome-std *dv*)
+;;   (start-midi-metronome-std *drum-device*)
 ;;
-;;   (start-midi-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat*)
+;;   (start-midi-metronome *drum-device* *gm-drum-channel* *gm-closed-hi-hat*)
 ;;
 ;;   ; note that beat is passed to func, not time
-;;   (start-metronome *dv* *gm-drum-channel* *gm-closed-hi-hat*
+;;   (start-metronome *drum-device* *gm-drum-channel* *gm-closed-hi-hat*
 ;;     (lambda (beat dev chan note)
 ;;       (io:midi-out (*metro* 'get-time beat) dev *io:midi-on* chan note 127)))))
 
