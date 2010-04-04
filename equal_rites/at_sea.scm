@@ -4,9 +4,11 @@
 
 ;; ====
 
+;; Run body n times.
 (define-macro (times n . body)
   `(dotimes (,(gensym) ,n) ,@body))
 
+;; Add val n times to list l.
 (define-macro (times-cons n l val)
   `(times ,n (set! ,l (cons ,val ,l))))
 
