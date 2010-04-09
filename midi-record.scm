@@ -119,7 +119,7 @@
 
 (define seq-add-track!
   (lambda (seq track)
-    (seq-set-tracks! (cons track (seq-tracks)))))
+    (seq-set-tracks! (cons track (seq-tracks seq)))))
 
 (define seq-play (lambda (seq) (play-tracks (seq-tracks seq))))
 
