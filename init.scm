@@ -2,3 +2,6 @@
 ;;; See the comment there.
 
 (print "Hello, World!")
+
+; (comment (ignred stuff))
+(macro (comment args) ())
