@@ -64,6 +64,7 @@
 ;; ================ accessor generator macros ================
 
 ; (attr-reader typename fieldname)
+; defines the getter function typename-fieldname
 (macro (attr-reader args)
   `(define ,(string->symbol
              (string-append (symbol->string (cadr args))
@@ -72,6 +73,7 @@
        (aget ,(cadr args) ,(symbol->string (caddr args))))))
 
 ; (attr-writer typename fieldname)
+; defines the setter function typename-set-fieldname!
 (macro (attr-writer args)
   `(define ,(string->symbol
              (string-append (symbol->string (cadr args))
@@ -80,6 +82,7 @@
        (aset! ,(cadr args) ,(symbol->string (caddr args)) val))))
 
 ; (attr-accessor typename fieldname)
+; defines both getter and setter
 (macro (attr-accessor args)
   `(begin
      (attr-reader ,@(cdr args))
