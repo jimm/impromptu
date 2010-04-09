@@ -2,11 +2,16 @@
 ;;;
 ;;; Requires utils.scm and metronome.scm, which in turn requires
 ;;; midi-setup.scm and midi-consts.scm for the {start,stop}-clicks
-;;; functions..
+;;; functions.
+
+; comment is defined in init.scm, which is loaded automatically
+(comment
+  (for-each
+     (lambda (f) (load-my-file f))
+     (list "utils" "midi-consts" "midi-setup" "metronome"))
+)
 
 ;; TODO
-;;
-;; - sequence list (tempo (track list))
 ;;
 ;; - use seq tempo to play tracks, which means changing delta times from
 ;;   milliseconds to fractions of a beat (960 ticks per beat)
@@ -73,7 +78,7 @@
 
 ;; ================ tracks ================
 
-;; A track is a list of the form (name dest chan events).
+;; A track is an alist with name, dest, chan, and events.
 
 (define make-track
   (lambda (name dest chan)
@@ -96,24 +101,25 @@
 
 (attr-accessor track name)
 (attr-accessor track dest)
-(attr-accessor track-chan)
-(attr-accessor track-events)
+(attr-accessor track chan)
+(attr-accessor track events)
 
 ;; ================ sequences ================
 
-;; A sequence is a list of the form (tempo tracks). We return a sequence
+;; A sequence is an alist with tempo and tracks. We return a sequence
 ;; with the current *tempo* value and an empty track list.
-(define make-seq (lambda () (list *tempo* ())))
+(define make-seq
+  (lambda ()
+    (list
+     (cons "tempo" *tempo*)
+     (cons "tracks" ()))))
 
-(define seq-tempo (lambda (seq) (car seq)))
-
-(define seq-set-tempo! (lambda (seq tempo) (set-car! seq tempo)))
-
-(define seq-tracks (lambda (seq) (cadr seq)))
+(attr-accessor seq tempo)
+(attr-accessor seq tracks)
 
 (define seq-add-track!
   (lambda (seq track)
-    (set-cdr! seq (cons track (cdr seq)))))
+    (seq-set-tracks! (cons track (seq-tracks)))))
 
 (define seq-play (lambda (seq) (play-tracks (seq-tracks seq))))
 
