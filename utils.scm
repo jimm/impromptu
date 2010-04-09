@@ -51,6 +51,33 @@
              (val (+ (* (+ 1 octave) 12) offset)))
          (clamp val 0 127))))
 
+
+;;; ================================================================
+;;; Macros for defining alist accessor functions
+;;; ================================================================
+
+; (attr-reader 'typename 'fieldname)
+(macro (attr-reader args)
+  `(define ,(string->symbol
+             (string-append (symbol->string (cadr args))
+                            "-" (symbol->string (caddr args))))
+     (lambda (,(cadr args))
+       (aget ,(cadr args) ,(symbol->string (caddr args))))))
+
+; (attr-writer 'typename 'fieldname)
+(macro (attr-writer args)
+  `(define ,(string->symbol
+             (string-append (symbol->string (cadr args))
+                            "-set-" (symbol->string (caddr args)) "!"))
+     (lambda (,(cadr args) val)
+       (aset! ,(cadr args) ,(symbol->string (caddr args)) val))))
+
+; (attr-accessor 'typename 'fieldname)
+(macro (attr-accessor args)
+  `(begin
+     (attr-reader ,@(cdr args))
+     (attr-writer ,@(cdr args))))
+
 ;;; ================================================================
 ;;; Debug
 ;;; ================================================================
