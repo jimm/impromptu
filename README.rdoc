@@ -27,3 +27,7 @@ midi-setup.scm defines my MIDI sources and destinations.
 
 The ext subdirectory contains other people's code, downloaded from the
 Impromptu site.
+
+= midi-record.scm
+
+The beginnings of an attempt at a really simple sequencer.
