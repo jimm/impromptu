@@ -56,6 +56,10 @@
 ;;; ================================================================
 (define debug ())
 
-(define debug-on (lambda () (set! debug (lambda args (apply print (append '("debug:") args))))))
+(define debug-on
+   (lambda ()
+      (set! debug (lambda args (apply print (append '("debug:") args))))))
 
-(define debug-off (lambda () (set! debug (lambda args ()))))
+(define debug-off
+   (lambda ()
+      (set! debug (lambda args ()))))
