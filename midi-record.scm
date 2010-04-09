@@ -1,7 +1,8 @@
 ;;; This is the beginning of a simple sequencer. Maybe.
 ;;;
-;;; Requires metronome.scm, which in turn requires midi-setup.scm and
-;;; midi-consts.scm for the {start,stop}-clicks functions..
+;;; Requires utils.scm and metronome.scm, which in turn requires
+;;; midi-setup.scm and midi-consts.scm for the {start,stop}-clicks
+;;; functions..
 
 ;; TODO
 ;;
@@ -70,11 +71,6 @@
     (if (null? list) ()
         (do-calc-delta-times () abs-start-time (car list) (cdr list)))))
 
-;; ================ assoc list utils ================
-
-(define aget (lambda (alist name) (cdr (assoc name alist))))
-(define aset! (lambda (alist name value) (set-obj-for-key! name value alist)))
-
 ;; ================ tracks ================
 
 ;; A track is a list of the form (name dest chan events).
@@ -98,17 +94,10 @@
      (cons "chan" (recording-chan))
      (cons "events" (calc-delta-times (recording-start-time) (reverse *recording*))))))
 
-(define track-name (lambda (track) (aget track "name")))
-(define track-set-name! (lambda (track name) (aset! track "name" name)))
-
-(define track-dest (lambda (track) (aget track "dest")))
-(define track-set-dest! (lambda (track dest) (aset! track "dest" dest)))
-
-(define track-chan (lambda (track) (aget track "chan")))
-(define track-set-chan! (lambda (track chan) (aset! track "chan" chan)))
-
-(define track-events (lambda (track) (aget track "events")))
-(define track-set-events! (lambda (track events) (aset! track "events" events)))
+(attr-accessor track name)
+(attr-accessor track dest)
+(attr-accessor track-chan)
+(attr-accessor track-events)
 
 ;; ================ sequences ================
 

@@ -53,10 +53,17 @@
 
 
 ;;; ================================================================
-;;; Macros for defining alist accessor functions
+;;; Alist helpers and macros for defining alist accessor functions
 ;;; ================================================================
 
-; (attr-reader 'typename 'fieldname)
+;; ================ assoc list get/set! ================
+
+(define aget (lambda (alist name) (cdr (assoc name alist))))
+(define aset! (lambda (alist name value) (set-obj-for-key! name value alist)))
+
+;; ================ accessor generator macros ================
+
+; (attr-reader typename fieldname)
 (macro (attr-reader args)
   `(define ,(string->symbol
              (string-append (symbol->string (cadr args))
@@ -64,7 +71,7 @@
      (lambda (,(cadr args))
        (aget ,(cadr args) ,(symbol->string (caddr args))))))
 
-; (attr-writer 'typename 'fieldname)
+; (attr-writer typename fieldname)
 (macro (attr-writer args)
   `(define ,(string->symbol
              (string-append (symbol->string (cadr args))
@@ -72,7 +79,7 @@
      (lambda (,(cadr args) val)
        (aset! ,(cadr args) ,(symbol->string (caddr args)) val))))
 
-; (attr-accessor 'typename 'fieldname)
+; (attr-accessor typename fieldname)
 (macro (attr-accessor args)
   `(begin
      (attr-reader ,@(cdr args))
