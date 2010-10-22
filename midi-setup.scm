@@ -12,3 +12,5 @@
   (define *ws-in* (io:midi-source 1))    ; Wavestation
 
 )
+
+(define *ss* (io:midi-destination 1))    ; SimpleSynth virtual input
