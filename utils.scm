@@ -37,7 +37,8 @@
                            ((#\b) 11)))
              (sharp-flat (case (char-downcase (string-ref str 1))
                                ((#\#) 1)  ; #
-                               ((#\b) -1) ; b
+                               ((#\s) 1)  ; s (sharp)
+                               ((#\b) -1) ; b (flat)
                                (else 0))))
          (+ offset sharp-flat))))
 
