@@ -6,9 +6,10 @@
     (au:print-audiounits unit-type-const)))  ;; cals au:get-node-strings
 
 (begin
-  ; See kAudioUnitType_* constants defined in AUComponent.h
+  ; See kAudioUnitType_* constants defined in AUComponent.h or AUComponent.r
   (my-print-au-info "auou" "Outputs")
   (my-print-au-info "aumu" "Audio Units")
+  (my-print-au-info "aumf" "Music Effects")
   (my-print-au-info "aufx" "FX Units")
   (my-print-au-info "aufc" "Format Converters, Spliters, and Mergers")
   (my-print-au-info "aumx" "Mixers")
