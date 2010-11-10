@@ -3,5 +3,5 @@
 
 (print "Hello, World!")
 
-; (comment (ignred stuff))
+; (comment (ignored stuff))
 (macro (comment args) ())
