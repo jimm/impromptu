@@ -1,5 +1,9 @@
+(load-my-file "flow-loader")            ; defined in bootstrap.scm
+
 ;;; ================================================================
 ;;; Pass throughs
+;;;
+;;; Depend on pass-through which is defined in flow.scm
 ;;; ================================================================
 
 (define io:midi-in (pass-through *mb* *kz* 0))

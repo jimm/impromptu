@@ -2,6 +2,4 @@
 ;;; See the comment there.
 
 (print "Hello, World!")
-
-; (comment (ignored stuff))
-(macro (comment args) ())
+(macro (comment args) ())               ; (comment (ignored stuff))
