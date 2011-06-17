@@ -101,3 +101,16 @@
 (define debug-off
    (lambda ()
       (set! debug (lambda args ()))))
+
+
+;;; ================================================================
+;;; Miscellaneous
+;;; ================================================================
+
+;; Unfortunately, there aren't many env vars defined. The list does not
+;; include those set within your shell rc files, for example.
+(define getenv
+  (lambda (envvar)
+    (objc:nsstring->string
+     (objc:call (objc:call (objc:call "NSProcessInfo" "processInfo") "environment")
+                "objectForKey:" (objc:string->nsstring envvar)))))
