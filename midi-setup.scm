@@ -1,5 +1,7 @@
 ;; My setup.
 
+(require "utils")
+
 (begin
 
   ;; MIDI destinations
@@ -17,12 +19,11 @@
 
   ;; Instrument assoc lists with name, src, dest, chan.
 
-  (define make-dest
-    (lambda (name src chan)
-      (list (cons "name" name) (cons "src" src) (cons "chan" chan))))
+  (define (make-dest name dest chan)
+    (list (cons "name" name) (cons "dest" dest) (cons "chan" chan)))
 
-  (define *i:mb* '(("name" . "Midiboard") ("dest" . *mb*)))
-  (define *i:ws* (cons '("dest" . *ws-in*) (make-dest "Wavestation" *ws* 5)))
+  (define *i:mb* '(("name" . "Midiboard") ("src" . *mb*)))
+  (define *i:ws* (cons '("src" . *ws-in*) (make-dest "Wavestation" *ws* 5)))
   (define *i:kz1* (make-dest "Kurzweil K2000 chan 1" *kz* 0))
   (define *i:kz7* (make-dest "Kurzweil K2000 chan 7" *kz* 6))
   (define *i:kz8* (make-dest "Kurzweil K2000 chan 8" *kz* 7))
@@ -41,10 +42,10 @@
 
   ;; Functions to access assoc list name, src, dest, chan.
 
-  (define i-name (lambda (i-assoc) (cdr (assoc "name" i-assoc))))
-  (define i-src  (lambda (i-assoc) (cdr (assoc "src"  i-assoc))))
-  (define i-dest (lambda (i-assoc) (cdr (assoc "dest" i-assoc))))
-  (define i-chan (lambda (i-assoc) (cdr (assoc "chan" i-assoc))))
+  (attr-reader i name)
+  (attr-reader i src)
+  (attr-reader i dest)
+  (attr-reader i chan)
 )
 
 (define *ss* (io:midi-destination 1))    ; SimpleSynth virtual input
