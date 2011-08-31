@@ -118,7 +118,7 @@
 ;; Kurzweil program change. Sends bank (100's value) then program (0-99).
 ;;
 ;; Example:
-;;   (kz-pc 0 903)
+;;   (kz-pc 0 93)
 (define kz-pc
    (lambda (chan program)
       (let* ((bank (+ 100 (real->integer (rational->real (/ program 100)))))
