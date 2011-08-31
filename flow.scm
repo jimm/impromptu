@@ -138,6 +138,18 @@
       (io:midi-out (now) *ws* *io:midi-cc* chan 0 0)
       (io:midi-out (now) *ws* *io:midi-cc* chan #x20 bank)))
 
+;; (ws-pc chan bank pc)
+;; Wavestation bank and program change. Only two bank values make sense:
+;;   0 = RAM1/RAM2
+;;   1 = ROM/CARD
+;;
+;; Example:
+;;   (ws-bank-pc 5 1)
+(define ws-pc
+   (lambda (chan bank program)
+      (ws-bank chan bank)
+      (pc *ws* chan program)))
+
 ;;; ================================================================
 ;;; Pre-defined filters
 ;;;
