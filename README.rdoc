@@ -7,8 +7,9 @@ I plan to use midi-setup.scm and flow.scm to control my live keyboard setup.
 
 = Auto-Loading Code
 
-Copy anything you want loaded to ~/Library/Application Support/Impromptu. See
-the comments in bootstrap.scm, which will load init.scm for you.
+Copy anything you want loaded to ~/Library/Application Support/Impromptu. In
+particular, see the comments in bootstrap.scm, which will load init.scm for
+you.
 
 = Flow
 
@@ -18,10 +19,46 @@ flow-data.scm (functions that manipulate flows and filters), flow-list-gui.scm
 (functions that draw a simple "where am I in the flow" window), and flow.scm
 (the main flow/filter processor).
 
+A flow contains a function that gets run when the flow is started and one or
+more filters. Each filter can modify, route, or ignore any incoming MIDI
+bytes. Filters are run sequentially. A filter must either output a list
+whose values are passed to the next filter or the empty list, in which case
+the remaining filters are ignored and nothing is output for that MIDI event.
+
+It's not as complicated as it sounds. Here's a flow that sends some program
+changes at the beginning then transposes all notes up one octave.
+
+    (define my-flow
+      (list "My Flow. Hope you like it."
+            (lambda ()
+              (pc *some-device* some-channel some-program-change-number)
+              (pc *another-device* another-channel another-pc-number))
+            (mk-f xpose 12)
+            (mk-f out *some-device* some-channel)
+            (mk-f out *another-device* another-channel)))
+
+Things get a bit tricker if you want to split the incoming MIDI up somehow
+so that you can process it with one list of filters for one destination and
+another list for another destination.
+
+    (define tp-flow-1
+       (list "Tommy's Place Flow 1"
+             tp-pre-proc ; defined elsewhere
+             (mk-f only-from *mb*) ; ignores input from any other device
+             (mk-f multi
+                     (list 
+                            (list (mk-f range 0 55)
+                                  (mk-f xpose 36)
+                                  (mk-f out *sj* 3)
+                                  (mk-f xpose -12)
+                                  (mk-f out *px* 4))
+                            (list (mk-f range 48 127)
+                                  (mk-f out *kz* 0))))))
+
+I've /got/ to make that nicer.
+
 experiment.scm contains some non-MIDI filters and flows that can be used to
 test the flow code. Note that that file is not well organized or documented.
-
-midi-setup.scm defines my MIDI sources and destinations.
 
 = ext
 
@@ -31,3 +68,12 @@ Impromptu site.
 = midi-record.scm
 
 The beginnings of an attempt at a really simple sequencer.
+
+= midi-setup.scm
+
+Defines my MIDI sources and destinations.
+
+= utils.scm
+
+Defines a few missing MIDI controller types and a number of helper
+functions.

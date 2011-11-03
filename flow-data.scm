@@ -22,8 +22,9 @@
 ;;; (the empty list) or a proc to call, and whose remaining elements are
 ;;; filters.
 ;;;
-;;; If a filter returns the empty list then the remaining filters in the flow
-;;; are ignored.
+;;; Each filter must return either a list of the form '(device type chan
+;;; byte-a byte-b) or the empty list. If a filter returns the empty list
+;;; then the remaining filters in the flow are ignored.
 ;;;
 ;;; Example flow:
 ;;; '(
