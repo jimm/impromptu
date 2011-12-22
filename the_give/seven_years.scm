@@ -1,6 +1,6 @@
 (define sy-flow-1
   (list "Seven Years Flow 1"
-        (lambda ()
+        (flow-setup
            (full-vol *kz* 0)
            (pc *ws* 5 91)
            (kz-pc 0 32))

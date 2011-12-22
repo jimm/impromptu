@@ -29,13 +29,17 @@
 ;;; Example flow:
 ;;; '(
 ;;;   "Name of flow"    ; optional
-;;;   (lambda ()        ; pre function list
+;;;   (flow-setup       ; pre function list
 ;;;     (pre1 "arg")
 ;;;     (pre2 "arg"))
 ;;;   ; start of filter list
 ;;;   (mk-f filter1 "arg")
 ;;;   (mk-f filter2 "arg"))
 ;;; ================================================================
+
+;; Simplifies definition of a flow setup function
+(define-macro (flow-setup . args)
+  `(lambda () ,@args))
 
 ;; Returns #t if the flow has a name---that is, if the car is a string.
 (define flow-has-name? (lambda (flow) (string? (car flow))))
@@ -44,7 +48,7 @@
 (define flow-name (lambda (flow) (if (flow-has-name? flow) (car flow) "")))
 
 ;; Return a flow's list of pre-filter functions.
-(define flow-pre-proc (lambda (flow) (if (flow-has-name? flow) (cadr flow) (car flow))))
+(define flow-setup-funcs (lambda (flow) (if (flow-has-name? flow) (cadr flow) (car flow))))
 
 ;; Return a flow's list of filters.
 (define flow-filter-list (lambda (flow) (if (flow-has-name? flow) (cddr flow) (cdr flow))))

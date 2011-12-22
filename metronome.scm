@@ -20,6 +20,8 @@
 ;;   measures. Or perhaps instead I should add a function that does that,
 ;;   which can be passed in to start-metronome by the caller.
 
+(require "midi-consts" "midi-setup")
+
 (define metronome-on #f)
 
 ;; Calls a function regularly, passing in dev, chan, note.

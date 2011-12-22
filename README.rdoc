@@ -11,6 +11,11 @@ Copy anything you want loaded to ~/Library/Application Support/Impromptu. In
 particular, see the comments in bootstrap.scm, which will load init.scm for
 you.
 
+In init.scm I define a few useful things like a +comment+ macro that lets
+you comment out blocks of code, +load-my-file+ which loads a .scm file in
+the directory +\*my-dir\*+, and +require+ which callso +load-my-file+ for
+all files that have not already been loaded.
+
 = Flow
 
 I'm working on live MIDI performance control: sending program changes and
@@ -26,24 +31,29 @@ whose values are passed to the next filter or the empty list, in which case
 the remaining filters are ignored and nothing is output for that MIDI event.
 
 It's not as complicated as it sounds. Here's a flow that sends some program
-changes at the beginning then transposes all notes up one octave.
+changes at the beginning then transposes all incoming notes up one octave
+and sends everything to two different devices.
 
     (define my-flow
       (list "My Flow. Hope you like it."
-            (lambda ()
+            (flow-setup
               (pc *some-device* some-channel some-program-change-number)
               (pc *another-device* another-channel another-pc-number))
             (mk-f xpose 12)
             (mk-f out *some-device* some-channel)
             (mk-f out *another-device* another-channel)))
 
-Things get a bit tricker if you want to split the incoming MIDI up somehow
-so that you can process it with one list of filters for one destination and
-another list for another destination.
+Things get a bit tricker if you want to split the incoming MIDI up so that
+you can process it with one list of filters for one destination and another
+list for another destination.
 
     (define tp-flow-1
        (list "Tommy's Place Flow 1"
-             tp-pre-proc ; defined elsewhere
+             (flow-setup
+               (pc *sj* 3 5)
+               (pc *ws* 5 81)
+               (pc *px* 4 23)
+               (kz-pc 0 109))
              (mk-f only-from *mb*) ; ignores input from any other device
              (mk-f multi
                      (list 
@@ -55,7 +65,29 @@ another list for another destination.
                             (list (mk-f range 48 127)
                                   (mk-f out *kz* 0))))))
 
-I've /got/ to make that nicer.
+I've /got/ to make that nicer. You could of course create the lists before
+the flow, then refer to them inside the flow. Here's an example:
+
+    (define split-1
+      (list (mk-f range 0 55)
+            (mk-f xpose 36)
+            (mk-f out *sj* 3)
+            (mk-f xpose -12)
+            (mk-f out *px* 4)))
+
+    (define split-2
+      (list (mk-f range 48 127)
+            (mk-f out *kz* 0)))
+
+    (define tp-flow-1
+       (list "Tommy's Place Flow 1"
+             (flow-setup
+               (pc *sj* 3 5)
+               (pc *ws* 5 81)
+               (pc *px* 4 23)
+               (kz-pc 0 109))
+             (mk-f only-from *mb*) ; ignores input from any other device
+             (mk-f multi (list split-1 split-2))))
 
 experiment.scm contains some non-MIDI filters and flows that can be used to
 test the flow code. Note that that file is not well organized or documented.

@@ -35,7 +35,7 @@
 (define play-flow
    (lambda args
       (let* ((flow (car args))
-             (pre-func (flow-pre-proc flow))
+             (pre-func (flow-setup-funcs flow))
              (interrupt (cdr args)))
         (when (not (null? pre-func)) (apply pre-func)) ; Run pre-filter proc
         (set! io:midi-in

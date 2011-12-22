@@ -1,4 +1,11 @@
-(load-my-file "flow-loader")            ; defined in bootstrap.scm
+;;;
+;;; macros
+;;;
+
+(help macro-expand #t)
+
+(define-macro (flow-setup . args)
+  `(lambda () ,@args))
 
 ;;; ================================================================
 ;;; Pass throughs
@@ -65,7 +72,7 @@
          (mk-f let-nothing-through)
          (mk-f t1 "my-arg-1-again")))
 
-(define test-pre-proc (lambda () (t1-pre) (t2-pre)))
+(define test-setup (lambda () (t1-pre) (t2-pre)))
 
 
 (define test-filter-list
@@ -76,7 +83,7 @@
    (list (mk-f t1 "SECOND FLOW ONLY FILTER")))
 
 (define test-flow
-   (append test-pre-proc test-filter-list))
+   (append test-setup test-filter-list))
 
 (define other-test-flow
    (append (lambda () (t1-pre)) other-test-filter-list))

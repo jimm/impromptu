@@ -21,10 +21,6 @@
 ;;        (env-var (objc:call env-dict "objectForKey:" "HOME")))
 ;;    (objc:nsstring->string env-var))
 
-(define *my-dir* "/Users/jimm/src/impromptu/")
+(define *my-dir* "/Users/jimm/src/github/impromptu/")
 
-;; This method loads a file in *my-dir*. The ".scm" extension gets added
-;; automatically.
-(define load-my-file (lambda (f) (load (string-append *my-dir* f ".scm"))))
-
-(load-my-file "init")
+(load (string-append *my-dir* "init.scm"))

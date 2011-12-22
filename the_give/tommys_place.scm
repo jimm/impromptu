@@ -1,5 +1,5 @@
-(define tp-pre-proc
-   (lambda ()
+(define tp-setup
+   (flow-setup
       (pc *sj* 3 5)
       (pc *ws* 5 81)
       (pc *px* 4 23)
@@ -7,7 +7,7 @@
 
 (define tp-flow-1
    (list "Tommy's Place Flow 1"
-         tp-pre-proc
+         tp-setup
          (mk-f only-from *mb*)
          (mk-f multi
                  (list 
@@ -21,7 +21,7 @@
 
 (define tp-flow-2
    (list "Tommy's Place Flow 2"
-         tp-pre-proc
+         tp-setup
          (mk-f only-from *mb*)
          (mk-f multi
                  (list 

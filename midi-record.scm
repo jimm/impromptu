@@ -4,12 +4,7 @@
 ;;; midi-setup.scm and midi-consts.scm for the {start,stop}-clicks
 ;;; functions.
 
-; comment is defined in init.scm, which is loaded automatically
-(comment
-  (for-each
-     (lambda (f) (load-my-file f))
-     (list "utils" "midi-consts" "midi-setup" "metronome"))
-)
+(require "utils" "metronome")
 
 ;; TODO
 ;;

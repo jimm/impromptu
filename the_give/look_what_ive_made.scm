@@ -1,6 +1,6 @@
 (define lwim-flow-1
   (list "Look What I've Made Flow 1"
-        (lambda ()
+        (flow-setup
               (full-vol *px* 4)
               (full-vol *ws* 5)
               (pc *px* 4 23)
