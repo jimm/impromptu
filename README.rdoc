@@ -3,7 +3,9 @@
 This is my collection of Impromptu (http://impromptu.moso.com.au/) code. Most
 of this is experimental.
 
-I plan to use midi-setup.scm and flow.scm to control my live keyboard setup.
+I don't use Impromptu any more, but I'm fond of some of the code here.
+
+midi-setup.scm and flow.scm can be used to control a live keyboard setup.
 
 = Auto-Loading Code
 
